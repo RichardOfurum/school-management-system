@@ -146,30 +146,32 @@ const TeachersPage = async({
   console.log(count);
 
   return (
-    <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
-        {/* top  */}
-      <div className='flex items-center justify-between'>
-            <h1 className='text-lg font-semibold hidden md:block' >All Teachers</h1>
-            <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
-                <TableSearch/>
-                <div className='flex items-center gap-4 self-end'>
-                    <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
-                        <Image src="/filter.png" alt="" height={14} width={14}/>
-                    </button>
-                    <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
-                        <Image src="/sort.png" alt="" height={14} width={14}/>
-                    </button>
-                    {
-                        role === "admin" && (
-                            <FormModeal table="teacher" type="create" />
-                        )
-                    }
-                </div>
+    <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
+       <div>
+             {/* top  */}
+            <div className='flex items-center justify-between'>
+                  <h1 className='text-lg font-semibold hidden md:block' >All Teachers</h1>
+                  <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
+                      <TableSearch/>
+                      <div className='flex items-center gap-4 self-end'>
+                          <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
+                              <Image src="/filter.png" alt="" height={14} width={14}/>
+                          </button>
+                          <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
+                              <Image src="/sort.png" alt="" height={14} width={14}/>
+                          </button>
+                          {
+                              role === "admin" && (
+                                  <FormModeal table="teacher" type="create" />
+                              )
+                          }
+                      </div>
+                  </div>
             </div>
-      </div>
 
-        {/* list  */}
-        <Table columns={columns} renderRow={renderRow} data={data}/>
+              {/* list  */}
+              <Table columns={columns} renderRow={renderRow} data={data}/>
+       </div>
 
         {/* pagination  */}
      

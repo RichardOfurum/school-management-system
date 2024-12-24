@@ -5,11 +5,14 @@ const TableSearch = () => {
 
   const router = useRouter();
 
+  const pageNumber = 1;
+
   const handleSubmit = (e:React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const value = (e.currentTarget[0] as HTMLInputElement).value;
     const params = new URLSearchParams(window.location.search);
       params.set('search', value.toString() );
+      params.set('page', pageNumber.toString() );
       router.push(`${window.location.pathname}?${params}`); 
     // const searchQuery = e.target.elements[0].value;
     // router.push(`/dashboard/students?search=${searchQuery}`);
