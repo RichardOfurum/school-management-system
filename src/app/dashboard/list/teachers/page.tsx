@@ -6,21 +6,11 @@ import Table from '@/components/Table';
 import Link from 'next/link';
 import { role, teachersData } from '@/lib/data';
 import FormModeal from '@/components/FormModal';
-import { Class, Subject, Teacher } from '@prisma/client';
+import { Class, Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 
-// type Teacher = {
-//   id:number;
-//   teacherId:string;
-//   name:string;
-//   email?:string;
-//   photo:string;
-//   phone:string;
-//   subjects:string[];
-//   classes:string[];
-//   address:string;
-// }
+
 
 type TeacherList = Teacher & {subjects:Subject[]} & {classes:Class[]}
 
@@ -35,8 +25,8 @@ const columns = [
       className:"hidden md:table-cell"
     },
     {
-      header:"Subjeects", 
-      accessor:"subjeects", 
+      header:"Subjects", 
+      accessor:"subjects", 
       className:"hidden md:table-cell"
     },
     {
@@ -61,13 +51,7 @@ const columns = [
     }
 ];
 
-function convertStringToNumber(input:string) {
-  const result = Number(input);
-  if (isNaN(result)) {
-      throw new Error("Invalid input: The string cannot be converted to a number.");
-  }
-  return result;
-}
+
 
 
 const renderRow = (item:TeacherList) => (
@@ -98,8 +82,10 @@ const renderRow = (item:TeacherList) => (
         </Link> 
             {
                 role === "admin" && (
-                  <FormModeal table="teacher" type="delete" id={convertStringToNumber(item.id)}/>
-                  // <FormModeal table="teacher" type="delete" id={item.id}/>
+                  <>
+                      <FormModeal table="teacher" type="delete" id={parseInt(item.id)}/>
+                      {/* <FormModeal table="teacher" type="delete" id={item.id}/> */}
+                  </>
                 )
             }
         
@@ -114,13 +100,38 @@ const TeachersPage = async({
   searchParams:{[key:string]:string | undefined}
 }) => {
 
-  console.log(searchParams);
+  // console.log(searchParams);
 
   const {page, ...queryParams} = searchParams;
   const p = page ? parseInt(page) : 1;
 
+  //URL PARAMS CONDITIONS
+
+  const query: Prisma.TeacherWhereInput = {}
+
+  if(queryParams) {
+    for(const [key, value] of Object.entries(queryParams)) {
+      if(value !== undefined) {
+        switch(key) {
+          case "classId":
+            query.lessons = {
+              some: {
+                classId: parseInt(value),
+              },
+            };
+            break;
+            case 'search':
+              query.name = { contains: value}; 
+              break;
+        }
+      }
+    }
+  }
+
+
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({
+      where:query,
       include:{
         subjects:true,
         classes:true,
@@ -129,10 +140,10 @@ const TeachersPage = async({
       skip: ITEM_PER_PAGE * (p - 1)
   }),
 
-   prisma.teacher.count()
+   prisma.teacher.count({where:query})
   ])
 
-  console.log(count)
+  console.log(count);
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0'>
