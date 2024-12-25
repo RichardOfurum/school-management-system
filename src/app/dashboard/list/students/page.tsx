@@ -6,6 +6,9 @@ import Table from '@/components/Table';
 import Link from 'next/link';
 import { role, studentsData } from '@/lib/data';
 import FormModeal from '@/components/FormModal';
+import { Prisma } from '@prisma/client';
+import prisma from '@/lib/prisma';
+import { ITEM_PER_PAGE } from '@/lib/settings';
 
 type Student = {
   id:number;
@@ -83,9 +86,59 @@ const renderRow = (item:Student) => (
   </tr>
 );
 
-const StudentListPage = () => {
+const StudentListPage = async({
+  searchParams
+}:{
+  searchParams:{[key:string]:string | undefined}
+}) => {
 
-  
+  // console.log(searchParams);
+
+  const {page, ...queryParams} = searchParams;
+  const p = page ? parseInt(page) : 1;
+
+  //URL PARAMS CONDITIONS
+
+  const query: Prisma.TeacherWhereInput = {}
+
+  if(queryParams) {
+    for(const [key, value] of Object.entries(queryParams)) {
+      if(value !== undefined) {
+        switch(key) {
+          case "classId":
+            query.lessons = {
+              some: {
+                classId: parseInt(value),
+              },
+            };
+            break;
+            case 'search':
+              query.name = { contains: value}; 
+              break;
+        }
+      }
+    }
+  }
+
+
+  const [data, count] = await prisma.$transaction([
+    prisma.teacher.findMany({
+      where:query,
+      include:{
+        subjects:true,
+        classes:true,
+      },
+      take: ITEM_PER_PAGE,
+      skip: ITEM_PER_PAGE * (p - 1)
+  }),
+
+   prisma.teacher.count({where:query})
+  ])
+
+  console.log(count);
+
+
+
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
        <div>
