@@ -149,13 +149,27 @@ const SingleStudentPage = () => {
             <div className='bg-white p-2 rounded-md'>
                 <h1 className='text-xl font-semibold'>Shortcuts</h1>
                 <div className='mt-4 flex gap-2 flex-wrap text-[10px] text-gray-500'>
-                    <Link href="/" className='p-3 rounded-md bg-lamaSkyLight'>Student&apos;s Classes</Link>
-                    <Link href={`/dashboard/list/teachers?classId=${2}`} className='p-3 rounded-md bg-lamaPurpleLight'>Student&apos;s Teachers</Link>
-                    <Link href="/" className='p-3 rounded-md bg-pink-50'>Student&apos;s Exams</Link>
-                    <Link href="/" className='p-3 rounded-md bg-lamaYellowLight'>Student&apos;s Lessons</Link>
-                    <Link href="/" className='p-3 rounded-md bg-lamaYellowLight'>Student&apos;s Results</Link>
+
+                    {/* <Link href="/" className='p-3 rounded-md bg-lamaSkyLight'>Student&apos;s Classes</Link> */}
+
+                    <Link href={`/dashboard/list/teachers?classId=${2}`} className='p-3 rounded-md bg-lamaPurpleLight'>
+                        Student&apos;s Teachers
+                    </Link>
+
+                    <Link href={`/dashboard/list/exams/?classId=${2}`} className='p-3 rounded-md bg-pink-50'>
+                        Student&apos;s Exams
+                    </Link>
+
+                    <Link href={`/dashboard/list/lessons/?classId=${2}`} className='p-3 rounded-md bg-lamaYellowLight'>
+                        Student&apos;s Lessons
+                    </Link>
+                    <Link href={`/dashboard/list/results/?classId=${2}`} className='p-3 rounded-md bg-lamaYellowLight'>
+                        Student&apos;s Results
+                    </Link>
                     
-                    <Link href="/" className='p-3 rounded-md bg-lamaPurpleLight'>Student&apos;s Assignments</Link>
+                    <Link href={`/dashboard/list/assignments/?classId=${2}`} className='p-3 rounded-md bg-lamaPurpleLight'>
+                        Student&apos;s Assignments
+                    </Link>
                 </div>
             </div>
             <Performance/>

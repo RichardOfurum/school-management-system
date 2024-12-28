@@ -6,21 +6,11 @@ import Table from '@/components/Table';
 import Link from 'next/link';
 import { role, studentsData } from '@/lib/data';
 import FormModeal from '@/components/FormModal';
-import { Prisma } from '@prisma/client';
+import { Class, Prisma, Student } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 
-type Student = {
-  id:number;
-  studentId:string;
-  name:string;
-  email?:string;
-  photo:string;
-  phone?:string;
-  grade:number;
-  class:string;
-  address:string;
-}
+type StudentList = Student & {class: Class}
 
 const columns = [
     {
@@ -54,17 +44,17 @@ const columns = [
     }
 ];
 
-const renderRow = (item:Student) => (
+const renderRow = (item:StudentList) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     <td className='flex items-center gap-4 p-4'>
-      <Image src={item.photo} alt="" width={40} height={40} className='rounded-full md:hidden xl:block w-10 h-10 object-cover'/>
+      <Image src={item.img || "/noAvater.png"} alt="" width={40} height={40} className='rounded-full md:hidden xl:block w-10 h-10 object-cover'/>
       <div className='flex flex-col'>
           <h2 className='font-semibold'>{item.name}</h2>
-          <p className='text-xs text-gray-500'>{item?.class}</p>
+          <p className='text-xs text-gray-500'>{item?.class.name}</p>
       </div>
     </td>
-    <td className='hidden md:table-cell'>{item.studentId}</td>
-    <td className='hidden md:table-cell'>{item.grade}</td>
+    <td className='hidden md:table-cell'>{item.username}</td>
+    <td className='hidden md:table-cell'>{item.class.name[0]}</td>
     
     <td className='hidden lg:table-cell'>{item?.phone}</td>
     <td className='hidden lg:table-cell'>{item.address}</td>
@@ -99,22 +89,26 @@ const StudentListPage = async({
 
   //URL PARAMS CONDITIONS
 
-  const query: Prisma.TeacherWhereInput = {}
+  const query: Prisma.StudentWhereInput = {}
 
   if(queryParams) {
     for(const [key, value] of Object.entries(queryParams)) {
       if(value !== undefined) {
         switch(key) {
-          case "classId":
-            query.lessons = {
-              some: {
-                classId: parseInt(value),
-              },
+          case "teacherId":
+            query.class = {
+              lessons:{
+                some: {
+                  teacherId: value,
+                },
+              }
             };
             break;
             case 'search':
               query.name = { contains: value}; 
               break;
+            default:
+                break;
         }
       }
     }
@@ -122,22 +116,20 @@ const StudentListPage = async({
 
 
   const [data, count] = await prisma.$transaction([
-    prisma.teacher.findMany({
+    prisma.student.findMany({
       where:query,
       include:{
-        subjects:true,
-        classes:true,
+        // subjects:true,
+        class:true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1)
   }),
 
-   prisma.teacher.count({where:query})
+   prisma.student.count({where:query})
   ])
 
   console.log(count);
-
-
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
@@ -164,12 +156,12 @@ const StudentListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={studentsData}/>
+              <Table columns={columns} renderRow={renderRow} data={data}/>
        </div>
 
         {/* pagination  */}
      
-        {/* <Pagination/> */}
+        <Pagination page={p} count={count}/>
       
     </div>
   )
