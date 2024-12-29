@@ -123,7 +123,7 @@ const ExamListPage = async({
         lesson:{
           select:{
             subject:{select: {name: true}},
-            teacher:{select: {name: true}},
+            teacher:{select: {name: true, surname: true}},
             class: {select: {name: true}}
           }
         }

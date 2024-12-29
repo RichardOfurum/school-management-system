@@ -182,11 +182,11 @@ const SingleTeacherPage = () => {
 
                     <Link href={`/dashboard/list/students/?teacherId=${"teacher2"}`} className='p-3 rounded-md bg-lamaPurpleLight'>Teacher&apos;s Students</Link>
 
-                    <Link href="/" className='p-3 rounded-md bg-pink-50'>Teacher&apos;s Exams</Link>
+                    <Link href={`/dashboard/list/exams/?teacherId=${"teacher2"}`}  className='p-3 rounded-md bg-pink-50'>Teacher&apos;s Exams</Link>
 
                     <Link href={`/dashboard/list/lessons/?teacherId=${"teacher12"}`} className='p-3 rounded-md bg-lamaYellowLight'>Teacher&apos;s Lessons</Link>
                     
-                    <Link href="/" className='p-3 rounded-md bg-lamaSkyLight'>Teacher&apos;s Assignments</Link>
+                    <Link href={`/dashboard/list/assignments?teacherId=${"teacher2"}`}  className='p-3 rounded-md bg-lamaSkyLight'>Teacher&apos;s Assignments</Link>
                 </div>
             </div>
             <Performance/>
