@@ -163,7 +163,7 @@ const SingleStudentPage = () => {
                     <Link href={`/dashboard/list/lessons/?classId=${2}`} className='p-3 rounded-md bg-lamaYellowLight'>
                         Student&apos;s Lessons
                     </Link>
-                    <Link href={`/dashboard/list/results/?classId=${2}`} className='p-3 rounded-md bg-lamaYellowLight'>
+                    <Link href={`/dashboard/list/results/?studentId=${"student2"}`} className='p-3 rounded-md bg-lamaYellowLight'>
                         Student&apos;s Results
                     </Link>
                     
