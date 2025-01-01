@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { role } from "@/lib/data";
+import { currentUser } from "@clerk/nextjs/server";
 
 const menuItems = [
   {
@@ -9,7 +9,7 @@ const menuItems = [
       {
         icon: "/home.png",
         label: "Home",
-        href: "/",
+        href: "/dashboard/admin",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
@@ -118,7 +118,10 @@ const menuItems = [
 ];
 
 
-const Menu = () => {
+const Menu = async() => {
+  const user = await currentUser();
+  const role = user?.publicMetadata.role as string;
+  
   return (
     <div className="mt-4 text-[12px] ">
         {menuItems.map(i =>(
