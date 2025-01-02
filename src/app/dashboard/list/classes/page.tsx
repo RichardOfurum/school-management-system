@@ -3,45 +3,16 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import { classesData, role } from '@/lib/data';
 import FormModal from '@/components/FormModal';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Class, Prisma, Teacher } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 
 type ClassList = Class & {supervisor: Teacher}
 
-const columns = [
-    {
-        header:"Class Name", 
-        accessor:"name"
-    },
-    {
-      header:"Capacity",  
-      accessor:"capacity", 
-      className:"hidden md:table-cell"
-    },
-    // {
-    //   header:"Grade",  
-    //   accessor:"grade", 
-    //   className:"hidden md:table-cell"
-    // },
-    {
-      header:"Supervisor",   
-      accessor:"supervisor",  
-      className:"hidden md:table-cell"
-    },
 
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
-
-
-const renderRow = (item:ClassList) => (
+const renderRow = (item:ClassList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     
     <td className='flex items-center gap-4 p-4 font-semibold'>
@@ -50,7 +21,7 @@ const renderRow = (item:ClassList) => (
     
     <td className='hidden md:table-cell'>{item.capacity}</td>
     {/* <td className='hidden md:table-cell'>{item.grade}</td> */}
-    <td className='hidden md:table-cell'>{item.supervisor.name + " " + item.supervisor.surname}</td>
+    <td className=''>{item.supervisor.name + " " + item.supervisor.surname}</td>
   
     <td>
       <div className='flex items-center gap-2'>
@@ -75,6 +46,33 @@ const ClassListPage = async({
 }:{
   searchParams:{[key:string]:string | undefined}
 }) => {
+
+    const {sessionClaims } = await auth();
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
+    
+
+    const columns = [
+      {
+          header:"Class Name", 
+          accessor:"name"
+      },
+      {
+        header:"Capacity",  
+        accessor:"capacity", 
+        className:"hidden md:table-cell"
+      },
+  
+      {
+        header:"Supervisor",   
+        accessor:"supervisor",  
+        // className:"hidden md:table-cell"
+      },
+  
+      ...(role === "admin" ? [{
+        header:"Actions",  
+        accessor:"actions",  
+      }] : [])
+  ];
 
   // console.log(searchParams);
 
@@ -123,8 +121,8 @@ const ClassListPage = async({
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
        <div>
            {/* top  */}
-            <div className='flex items-center justify-between'>
-                  <h1 className='text-lg font-semibold hidden md:block' >All Classes</h1>
+            <div className='md:flex items-center justify-between'>
+                  <h1 className='text-lg font-semibold mb-4' >All Classes</h1>
                   <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
                       <TableSearch/>
                       <div className='flex items-center gap-4 self-end'>
@@ -144,7 +142,7 @@ const ClassListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table columns={columns} renderRow={(item) => renderRow(item, role)} data={data}/>
        </div>
 
         {/* pagination  */}
