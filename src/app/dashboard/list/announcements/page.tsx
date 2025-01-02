@@ -3,37 +3,15 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import {announcementsData, role } from '@/lib/data';
 import FormModal from '@/components/FormModal';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Announcement, Class, Prisma } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 
 type AnnouncementList = Announcement & {class: Class}
 
-const columns = [
-    {
-        header:"Title", 
-        accessor:"title"
-    },
-    {
-      header:"Class",   
-      accessor:"class", 
-    },
-    {
-      header:"Date",  
-      accessor:"date", 
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
-
-const renderRow = (item:AnnouncementList) => (
+const renderRow = (item:AnnouncementList, role: string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     
     <td className='flex items-center gap-4 p-4 font-semibold'>
@@ -70,6 +48,29 @@ const AnnouncementListPage = async({
 }:{
   searchParams:{[key:string]:string | undefined}
 }) => {
+
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  const columns = [
+    {
+        header:"Title", 
+        accessor:"title"
+    },
+    {
+      header:"Class",   
+      accessor:"class", 
+    },
+    {
+      header:"Date",  
+      accessor:"date", 
+      className:"hidden lg:table-cell"
+    },
+    ...(role === "admin" ? [{
+      header:"Actions",  
+      accessor:"actions",  
+    }] : [])
+];
 
   // console.log(searchParams);
 
@@ -113,8 +114,10 @@ const AnnouncementListPage = async({
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
       <div>
               {/* top  */}
-            <div className='flex items-center justify-between'>
-                  <h1 className='text-lg font-semibold hidden md:block' >All Announcement</h1>
+            <div className='md:flex  items-center justify-between '>
+
+                  <h1 className='text-lg font-semibold mb-4' >All Announcement</h1>
+
                   <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
                       <TableSearch/>
                       <div className='flex items-center gap-4 self-end'>
@@ -134,7 +137,12 @@ const AnnouncementListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table 
+                columns={columns} 
+                renderRow={(item) => renderRow(item, role)} 
+                // renderRow={renderRow} 
+                data={data}
+              />
 
       </div>
 
