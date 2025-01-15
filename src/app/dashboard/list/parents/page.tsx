@@ -3,43 +3,17 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import { parentsData, role } from '@/lib/data';
 import FormModal from '@/components/FormModal';
 import { Parent, Prisma, Student } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
+import { auth } from '@clerk/nextjs/server';
 
 type ParentList = Parent & {students: Student[]}
 
-const columns = [
-    {
-        header:"info", 
-        accessor:"infor"
-    },
-    {
-      header:"Student Names", 
-      accessor:"students", 
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Phone",  
-      accessor:"phone",  
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Address",   
-      accessor:"address",   
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
 
-const renderRow = (item:ParentList) => (
+
+const renderRow = (item:ParentList,  role: string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     <td className='flex items-center gap-4 p-4'>
       
@@ -77,6 +51,36 @@ const ParentListPage = async({
 }) => {
 
   // console.log(searchParams);
+
+  const {userId, sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
+
+  const columns = [
+    {
+        header:"info", 
+        accessor:"infor"
+    },
+    {
+      header:"Student Names", 
+      accessor:"students", 
+      className:"hidden md:table-cell"
+    },
+    {
+      header:"Phone",  
+      accessor:"phone",  
+      className:"hidden lg:table-cell"
+    },
+    {
+      header:"Address",   
+      accessor:"address",   
+      className:"hidden lg:table-cell"
+    },
+    ...(role === "admin" ? [{
+      header:"Actions",  
+      accessor:"actions",  
+    }] : [])
+];
 
   const {page, ...queryParams} = searchParams;
   const p = page ? parseInt(page) : 1;
@@ -141,7 +145,7 @@ const ParentListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table columns={columns} renderRow={(item) => renderRow(item, role)} data={data}/>
 
 
         </div>

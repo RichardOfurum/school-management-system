@@ -3,11 +3,14 @@
 import * as Clerk from '@clerk/elements/common'
 import * as SignIn from '@clerk/elements/sign-in'
 import Image from 'next/image';
+import { useState } from 'react';
 // import { useUser } from '@clerk/nextjs';
 // import { useEffect } from 'react';
 // import { useRouter } from 'next/navigation';
 
-const singInPage = () => {
+
+const SingInPage = () => {
+    const [loading, setLoading] = useState<boolean>(false)
     // const {isLoaded, isSignedIn, user} = useUser();
 
     // const router = useRouter();
@@ -39,11 +42,17 @@ const singInPage = () => {
                     <Clerk.Input type="password" required className='p-2 rounded-md ring-1 ring-gray-500 outline-none'/>
                     <Clerk.FieldError className='text-sm text-red-400'/>
                 </Clerk.Field>
-                <SignIn.Action submit className='bg-blue-500 text-white my-1 rounded-md text-sm p-[10px] font-bold'>Sign in</SignIn.Action>
+                <SignIn.Action submit className={`${loading ? 'bg-blue-300' : 'bg-blue-500'} text-white my-1 rounded-md text-sm p-[10px] font-bold`} onClick={() => setLoading(true)} >
+                    {
+                        loading 
+                        ? <span>Please wait...</span> 
+                        : <span>Sign in</span> 
+                    }
+                </SignIn.Action>
             </SignIn.Step>
         </SignIn.Root>
     </div>
   )
 }
 
-export default singInPage
+export default SingInPage

@@ -3,34 +3,15 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import { role, subjectsData } from '@/lib/data';
 import FormModal from '@/components/FormModal';
 import { Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
+import { auth } from '@clerk/nextjs/server';
 
 type SubjectList = Subject & {teachers: Teacher[]} 
 
-const columns = [
-    {
-        header:"Subject Name", 
-        accessor:"name"
-    },
-    {
-      header:"Teachers", 
-      accessor:"teachers", 
-      className:"hidden md:table-cell"
-    },
-
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
-
-const renderRow = (item:SubjectList) => (
+const renderRow = (item:SubjectList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     <td className='flex items-center gap-4 p-4 font-semibold'>
         {item.name}
@@ -62,6 +43,26 @@ const ParentListPage = async({
 }) => {
 
   // console.log(searchParams);
+
+    const {sessionClaims } = await auth();
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  const columns = [
+    {
+        header:"Subject Name", 
+        accessor:"name"
+    },
+    {
+      header:"Teachers", 
+      accessor:"teachers", 
+      className:"hidden md:table-cell"
+    },
+
+    ...(role === "admin" ? [{
+      header:"Actions",  
+      accessor:"actions",  
+    }] : [])
+];
 
   const {page, ...queryParams} = searchParams;
   const p = page ? parseInt(page) : 1;
@@ -126,7 +127,7 @@ const ParentListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table columns={columns} renderRow={(item) => renderRow(item, role)} data={data}/>
        </div>
 
         {/* pagination  */}
