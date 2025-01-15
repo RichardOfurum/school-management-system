@@ -33,7 +33,7 @@ const renderRow = (item:AssignmentList, role: string | undefined) => (
       <div className='flex items-center gap-2'>
        
             {
-                role === "admin" || role === "teacher" && (
+                (role === "admin" || role === "teacher") && (
                   <>
                       <FormModal table="assignment" type="update" data={item} />
                       <FormModal table="assignment" type="delete" id={item.id} />
@@ -142,6 +142,7 @@ const AssignmentListPage = async({
           }
         }
       }
+      break;
     default:
       break;
   }

@@ -4,57 +4,16 @@ import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import Link from 'next/link';
-import { role, teachersData } from '@/lib/data';
 import FormModeal from '@/components/FormModal';
 import { Class, Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-
-
+import { auth } from '@clerk/nextjs/server';
 
 type TeacherList = Teacher & {subjects:Subject[]} & {classes:Class[]}
 
-const columns = [
-    {
-        header:"info", 
-        accessor:"infor"
-    },
-    {
-      header:"Teacher ID", 
-      accessor:"teacherId", 
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Subjects", 
-      accessor:"subjects", 
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Classes",  
-      accessor:"classes",  
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Phone",  
-      accessor:"phone",  
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Address",   
-      accessor:"address",   
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
 
-
-
-
-const renderRow = (item:TeacherList) => (
+const renderRow = (item:TeacherList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     <td className='flex items-center gap-4 p-4'>
       <Image src={item.img || "/noAvater.png"} alt="" width={40} height={40} className='rounded-full md:hidden xl:block w-10 h-10 object-cover'/>
@@ -101,6 +60,45 @@ const TeachersListPage = async({
 }) => {
 
   // console.log(searchParams);
+
+      const {sessionClaims } = await auth(); 
+      const role = (sessionClaims?.metadata as { role?: string })?.role;
+
+  const columns = [
+    {
+        header:"info", 
+        accessor:"infor"
+    },
+    {
+      header:"Teacher ID", 
+      accessor:"teacherId", 
+      className:"hidden md:table-cell"
+    },
+    {
+      header:"Subjects", 
+      accessor:"subjects", 
+      className:"hidden md:table-cell"
+    },
+    {
+      header:"Classes",  
+      accessor:"classes",  
+      className:"hidden md:table-cell"
+    },
+    {
+      header:"Phone",  
+      accessor:"phone",  
+      className:"hidden lg:table-cell"
+    },
+    {
+      header:"Address",   
+      accessor:"address",   
+      className:"hidden lg:table-cell"
+    },
+    ...(role === "admin" ? [{
+      header:"Actions",  
+      accessor:"actions",  
+    }] : [])
+];
 
   const {page, ...queryParams} = searchParams;
   const p = page ? parseInt(page) : 1;
@@ -170,7 +168,7 @@ const TeachersListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table columns={columns} renderRow={(item) => renderRow(item, role)}  data={data}/>
        </div>
 
         {/* pagination  */}

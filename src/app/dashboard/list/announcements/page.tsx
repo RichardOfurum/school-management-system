@@ -17,7 +17,7 @@ const renderRow = (item:AnnouncementList, role: string | undefined) => (
     <td className='flex items-center gap-4 p-4 font-semibold'>
         {item.title}
     </td>
-    <td className=''>{item.class.name}</td> 
+    <td className=''>{item.class?.name || "-"}</td> 
     <td className='hidden lg:table-cell'>
       {
           new Intl.DateTimeFormat("en-US").format(item.date)
@@ -49,8 +49,9 @@ const AnnouncementListPage = async({
   searchParams:{[key:string]:string | undefined}
 }) => {
 
-  const { sessionClaims } = await auth();
+  const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const currentUserId = userId;
 
   const columns = [
     {
@@ -93,7 +94,49 @@ const AnnouncementListPage = async({
         }
       }
     }
+  };
+
+   //ROLE CONDITIONS
+
+  //  switch (role) {
+  //   case "admin":
+  //     break;
+  //   case "teacher":
+  //     query.OR = [
+  //       {classId: null},
+  //       {class: {lessons: {some:{teacherId: currentUserId!}}}},
+  //     ];
+  //     break;
+  //   case "student":
+  //     query.OR = [
+  //       {classId: null},
+  //       {class: {students: {some:{id: currentUserId!}}}},
+  //     ];
+  //     break;
+  //   case "parent":
+  //     query.OR = [
+  //       {classId: null},
+  //       {class: {students: {some:{parentId: currentUserId!}}}},
+  //     ];
+  //     break;
+    
+  //   default:
+  //     break;
+  //  }
+
+  const roleConditions = {
+    teacher: {lessons:{some: {teacherId: currentUserId!}}},
+    student:{ students: {some:{ id: currentUserId! }} },
+    parent:{ students: {some:{ parentId: currentUserId! }} },
   }
+
+    query.OR = [
+    {classId: null},
+    {
+      class: roleConditions[role as keyof typeof roleConditions] || {},
+    }
+  ];
+
 
 
   const [data, count] = await prisma.$transaction([

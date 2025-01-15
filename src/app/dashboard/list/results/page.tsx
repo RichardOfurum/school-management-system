@@ -3,12 +3,11 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import {assignmentsData, resultsData, role } from '@/lib/data';
 import FormModal from '@/components/FormModal';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { Prisma, Result } from '@prisma/client';
+import { Prisma } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 
 type ResultList = {
   id: number,
@@ -22,50 +21,9 @@ type ResultList = {
   startTime: Date,
 }
 
-const columns = [
-    {
-        header:"Title", 
-        accessor:"title"
-    },
-    {
-      header:"Student",   
-      accessor:"student", 
-    },
 
-    {
-        header:"Score",  
-        accessor:"score", 
-    },
-    {
-      header:"Teacher",  
-      accessor:"teacher", 
-      className:"hidden xl:table-cell"
-    },
-    {
-        header:"Class",
-        accessor:"class", 
-        className:"hidden md:table-cell"
-    },
 
-    // {
-    //     header:"Type",  
-    //     accessor:"type", 
-    //     className:"hidden xl:table-cell"
-    //   },
- 
-    {
-      header:"Date",  
-      accessor:"date", 
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
-
-const renderRow = (item:ResultList) => (
+const renderRow = (item:ResultList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     
     <td className='flex items-center gap-4 p-4 font-semibold'>
@@ -114,6 +72,46 @@ const ResultListPage = async({
 
   // console.log(searchParams);
 
+    const { userId, sessionClaims } = await auth();
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
+    const currentUserId = userId;
+
+    const columns = [
+      {
+          header:"Title", 
+          accessor:"title"
+      },
+      {
+        header:"Student",   
+        accessor:"student", 
+      },
+  
+      {
+          header:"Score",  
+          accessor:"score", 
+      },
+      {
+        header:"Teacher",  
+        accessor:"teacher", 
+        className:"hidden xl:table-cell"
+      },
+      {
+          header:"Class",
+          accessor:"class", 
+          className:"hidden md:table-cell"
+      },
+   
+      {
+        header:"Date",  
+        accessor:"date", 
+        className:"hidden lg:table-cell"
+      },
+      ...(role === "admin" || role === "teacher" ? [{
+        header:"Actions",  
+        accessor:"actions",  
+      }] : [])
+  ];
+
   const {page, ...queryParams} = searchParams;
   const p = page ? parseInt(page) : 1;
 
@@ -142,6 +140,31 @@ const ResultListPage = async({
       }
     }
   }
+
+    // ROLE CONDITIONS
+
+    switch (role) {
+      case "admin":
+        break;
+      case "teacher":
+        query.OR = [
+          { exam: { lesson: { teacherId: currentUserId! } } },
+          { assignment: { lesson: { teacherId: currentUserId! } } },
+        ];
+        break;
+  
+      case "student":
+        query.studentId = currentUserId!;
+        break;
+  
+      case "parent":
+        query.student = {
+          parentId: currentUserId!,
+        };
+        break;
+      default:
+        break;
+    }
 
   
 
@@ -224,7 +247,7 @@ const ResultListPage = async({
               </div>
 
                 {/* list  */}
-                <Table columns={columns} renderRow={renderRow} data={data}/>
+                <Table columns={columns} renderRow={(item) => renderRow(item, role)}  data={data}/>
         </div>
 
         {/* pagination  */}
