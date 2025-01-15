@@ -98,44 +98,43 @@ const AnnouncementListPage = async({
 
    //ROLE CONDITIONS
 
-  //  switch (role) {
-  //   case "admin":
-  //     break;
-  //   case "teacher":
-  //     query.OR = [
-  //       {classId: null},
-  //       {class: {lessons: {some:{teacherId: currentUserId!}}}},
-  //     ];
-  //     break;
-  //   case "student":
-  //     query.OR = [
-  //       {classId: null},
-  //       {class: {students: {some:{id: currentUserId!}}}},
-  //     ];
-  //     break;
-  //   case "parent":
-  //     query.OR = [
-  //       {classId: null},
-  //       {class: {students: {some:{parentId: currentUserId!}}}},
-  //     ];
-  //     break;
-    
-  //   default:
-  //     break;
-  //  }
+   switch (role) {
+    case "admin":
+      break;
+    case "teacher":
+      query.OR = [
+        {classId: null},
+        {class: {lessons: {some:{teacherId: currentUserId!}}}},
+      ];
+      break;
+    case "student":
+      query.OR = [
+        {classId: null},
+        {class: {students: {some:{id: currentUserId!}}}},
+      ];
+      break;
+    case "parent":
+      query.OR = [
+        {classId: null},
+        {class: {students: {some:{parentId: currentUserId!}}}},
+      ];
+      break;
+    default:
+      break;
+   }
 
-  const roleConditions = {
-    teacher: {lessons:{some: {teacherId: currentUserId!}}},
-    student:{ students: {some:{ id: currentUserId! }} },
-    parent:{ students: {some:{ parentId: currentUserId! }} },
-  }
+  // const roleConditions = {
+  //   teacher: {lessons:{some: {teacherId: currentUserId!}}},
+  //   student:{ students: {some:{ id: currentUserId! }} },
+  //   parent:{ students: {some:{ parentId: currentUserId! }} },
+  // }
 
-    query.OR = [
-    {classId: null},
-    {
-      class: roleConditions[role as keyof typeof roleConditions] || {},
-    }
-  ];
+  //   query.OR = [
+  //   {classId: null},
+  //   {
+  //     class: roleConditions[role as keyof typeof roleConditions] || {},
+  //   }
+  // ];
 
 
 
