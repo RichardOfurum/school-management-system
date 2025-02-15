@@ -3,84 +3,75 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import Link from 'next/link';
-import { role, studentsData } from '@/lib/data';
-import { Class, Prisma, Student } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
+import { Class, Grade, Prisma } from '@prisma/client';
+import { auth } from '@clerk/nextjs/server';
 import FormContainer from '@/components/FormContainer';
+import Link from 'next/link';
 
-type StudentList = Student & {class: Class}
+type GradeList = {
+    id: number,
+    level: string,
+    _count: { students: number },
+}
 
-const columns = [
-    {
-        header:"info", 
-        accessor:"infor"
-    },
-    {
-      header:"Student ID", 
-      accessor:"studentId", 
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Grade", 
-      accessor:"grade", 
-      className:"hidden md:table-cell"
-    },
-    {
-      header:"Phone",  
-      accessor:"phone",  
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Address",   
-      accessor:"address",   
-      className:"hidden lg:table-cell"
-    },
-    {
-      header:"Actions",  
-      accessor:"actions",  
-      // className:"hidden md:table-cell"
-    }
-];
 
-const renderRow = (item:StudentList) => (
+const renderRow = (item:GradeList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
-    <td className='flex items-center gap-4 p-4'>
-      <Image src={item.img || "/noAvater.png"} alt="" width={40} height={40} className='rounded-full md:hidden xl:block w-10 h-10 object-cover'/>
-      <div className='flex flex-col'>
-          <h2 className='font-semibold'>{item.name}</h2>
-          <p className='text-xs text-gray-500'>{item?.class.name}</p>
-      </div>
-    </td>
-    <td className='hidden md:table-cell'>{item.username}</td>
-    <td className='hidden md:table-cell'>{item.class.name[0]}</td>
     
-    <td className='hidden lg:table-cell'>{item?.phone}</td>
-    <td className='hidden lg:table-cell'>{item.address}</td>
+    <td className='flex items-center gap-4 p-4 font-semibold'>
+        {item.level}
+    </td>
+    
+    <td className=''>{item?._count.students}</td>
+   
     <td>
       <div className='flex items-center gap-2'>
-        <Link href={`/dashboard/list/students/${item.id}`}>
+        <Link href={`/dashboard/list/students/?grade=${item.id}`}>
             <button className='w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky'>
                 <Image src="/view.png" alt="" width={16} height={16}/>
             </button>
-        </Link> 
+        </Link>
             {
                 role === "admin" && (
-                  <FormContainer table="student" type="delete" id={item.id} />
+                  <>
+                      <FormContainer table="class" type="update" data={item} />
+                      <FormContainer table="class" type="delete" id={item.id} />
+                  </>
                 )
             }
-        
       </div>
     </td>
   </tr>
 );
 
-const StudentListPage = async({
+
+const ClassListPage = async({
   searchParams
 }:{
   searchParams:{[key:string]:string | undefined}
 }) => {
+
+    const {sessionClaims } = await auth();
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
+    
+
+    const columns = [
+      {
+          header:"Grade Level", 
+          accessor:"level"
+      },
+      {
+        header:"Number Of Students",  
+        accessor:"students", 
+      },
+  
+      ...(role === "admin" ? [{
+        header:"Actions",  
+        accessor:"actions",  
+      }] : [])
+  ];
 
   // console.log(searchParams);
 
@@ -89,29 +80,20 @@ const StudentListPage = async({
 
   //URL PARAMS CONDITIONS
 
-  const query: Prisma.StudentWhereInput = {}
+  const query: Prisma.ClassWhereInput = {}
 
   if(queryParams) {
     for(const [key, value] of Object.entries(queryParams)) {
       if(value !== undefined) {
         switch(key) {
-          case "teacherId":
-            query.class = {
-              lessons:{
-                some: {
-                  teacherId: value,
-                },
-              }
-            };
-            break;
+            case "supervisorId":
+              query.supervisorId = value
+              break;
             case 'search':
               query.name = { contains: value}; 
               break;
-            case "grade": // Handle filtering by gradeId
-              query.gradeId = Number(value); // Ensure it's converted to a number
-              break;
             default:
-                break;
+              break;
         }
       }
     }
@@ -119,27 +101,32 @@ const StudentListPage = async({
 
 
   const [data, count] = await prisma.$transaction([
-    prisma.student.findMany({
-      where:query,
-      include:{
-        // subjects:true,
-        class:true,
-      },
+    prisma.grade.findMany({
+        select: {
+            id: true,
+            level: true,
+            _count: {
+              select: {
+                students: true, // Count number of students in each grade
+              },
+            },
+          },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1)
   }),
 
-   prisma.student.count({where:query})
+   prisma.class.count({where:query})
   ])
 
   console.log(count);
 
+  
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
        <div>
-             {/* top  */}
+           {/* top  */}
             <div className='md:flex items-center justify-between'>
-                  <h1 className='text-lg font-semibold mb-4' >All Students</h1>
+                  <h1 className='text-lg font-semibold mb-4' >All Grades</h1>
                   <div className='flex flex-col md:flex-row items-center gap-4 w-full md:w-auto'>
                       <TableSearch/>
                       <div className='flex items-center gap-4 self-end'>
@@ -151,7 +138,7 @@ const StudentListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                <FormContainer table="student" type="create" />
+                                <FormContainer table="class" type="create" />
                               )
                           }
                       </div>
@@ -159,7 +146,7 @@ const StudentListPage = async({
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={renderRow} data={data}/>
+              <Table columns={columns} renderRow={(item) => renderRow(item, role)} data={data}/>
        </div>
 
         {/* pagination  */}
@@ -170,4 +157,4 @@ const StudentListPage = async({
   )
 }
 
-export default StudentListPage
+export default ClassListPage

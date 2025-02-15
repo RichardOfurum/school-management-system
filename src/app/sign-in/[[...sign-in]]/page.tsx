@@ -2,8 +2,9 @@
 
 import * as Clerk from '@clerk/elements/common'
 import * as SignIn from '@clerk/elements/sign-in'
+import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { useUser } from '@clerk/nextjs';
 // import { useEffect } from 'react';
 // import { useRouter } from 'next/navigation';
@@ -11,7 +12,7 @@ import { useState } from 'react';
 
 const SingInPage = () => {
     const [loading, setLoading] = useState<boolean>(false)
-    // const {isLoaded, isSignedIn, user} = useUser();
+    const {isLoaded, isSignedIn, user} = useUser();
 
     // const router = useRouter();
 
@@ -21,6 +22,11 @@ const SingInPage = () => {
     //         router.push(`/dashboard/${role}`)
     //     }
     // },[user, router]);
+    useEffect(() =>{
+        setTimeout(() =>{
+            setLoading(false);
+        },5000);
+    },[loading]);
   return (
     <div className='h-screen flex items-center justify-center bg-lamaSkyLight'>
         <SignIn.Root>
