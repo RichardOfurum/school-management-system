@@ -4,11 +4,11 @@ import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
 import Link from 'next/link';
-import FormModeal from '@/components/FormModal';
 import { Class, Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type TeacherList = Teacher & {subjects:Subject[]} & {classes:Class[]}
 
@@ -42,7 +42,8 @@ const renderRow = (item:TeacherList, role:string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModeal table="teacher" type="delete" id={parseInt(item.id)}/>
+                      {/* <h1>{item.id}</h1> */}
+                      <FormContainer table="teacher" type="delete" id={item.id}/>
                       {/* <FormModeal table="teacher" type="delete" id={item.id}/> */}
                   </>
                 )
@@ -160,7 +161,7 @@ const TeachersListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                  <FormModeal table="teacher" type="create" />
+                                  <FormContainer table="teacher" type="create" />
                               )
                           }
                       </div>

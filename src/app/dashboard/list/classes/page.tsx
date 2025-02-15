@@ -3,13 +3,14 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import FormModal from '@/components/FormModal';
+
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
-import { Class, Prisma, Teacher } from '@prisma/client';
+import { Class, Grade, Prisma, Teacher } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
-type ClassList = Class & {supervisor: Teacher}
+type ClassList = Class & {supervisor: Teacher} &{grade: Grade}
 
 
 const renderRow = (item:ClassList, role:string | undefined) => (
@@ -20,7 +21,7 @@ const renderRow = (item:ClassList, role:string | undefined) => (
     </td>
     
     <td className='hidden md:table-cell'>{item.capacity}</td>
-    {/* <td className='hidden md:table-cell'>{item.grade}</td> */}
+    <td className='hidden md:table-cell'>{item.grade.level}</td>
     <td className=''>{item.supervisor.name + " " + item.supervisor.surname}</td>
   
     <td>
@@ -29,8 +30,8 @@ const renderRow = (item:ClassList, role:string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModal table="class" type="update" data={item} />
-                      <FormModal table="class" type="delete" id={item.id} />
+                      <FormContainer table="class" type="update" data={item} />
+                      <FormContainer table="class" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -59,6 +60,11 @@ const ClassListPage = async({
       {
         header:"Capacity",  
         accessor:"capacity", 
+        className:"hidden md:table-cell"
+      },
+      {
+        header:"Grade",  
+        accessor:"grade", 
         className:"hidden md:table-cell"
       },
   
@@ -106,7 +112,9 @@ const ClassListPage = async({
       where:query,
       include:{
         supervisor:true,
+        grade:true,
       },
+      
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1)
   }),
@@ -134,7 +142,7 @@ const ClassListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                <FormModal table="class" type="create" />
+                                <FormContainer table="class" type="create" />
                               )
                           }
                       </div>

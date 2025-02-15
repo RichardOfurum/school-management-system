@@ -8,10 +8,12 @@ import { Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type SubjectList = Subject & {teachers: Teacher[]} 
 
 const renderRow = (item:SubjectList, role:string | undefined) => (
+  
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     <td className='flex items-center gap-4 p-4 font-semibold'>
         {item.name}
@@ -25,8 +27,10 @@ const renderRow = (item:SubjectList, role:string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModal table="subject" type="update" data={item} />
-                      <FormModal table="subject" type="delete" id={item.id} />
+                      <FormContainer table="subject" type="update" data={item} />
+                      <FormContainer table="subject" type="delete" id={item.id} />
+                      {/* <FormModal table="subject" type="update" data={item} />
+                      <FormModal table="subject" type="delete" id={item.id} /> */}
                   </>
                 )
             }
@@ -80,6 +84,14 @@ const ParentListPage = async({
               break;
             default:
               break;
+            
+              case "teacherId":
+                query.teachers = { // Use the correct field name `lessons`
+                  some: {
+                    id: value, // Filter by `teacherId` in the `lessons` relation
+                  },
+                };
+                break;
         }
       }
     }
@@ -117,17 +129,18 @@ const ParentListPage = async({
                           <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
                               <Image src="/sort.png" alt="" height={14} width={14}/>
                           </button>
-                          {
-                              role === "admin" && (
-                                <FormModal table="subject" type="create" />
-                              )
-                          }
+                          {role === "admin" && (
+                            <FormContainer table="subject" type="create" />
+                          )}
                       </div>
                   </div>
             </div>
 
               {/* list  */}
-              <Table columns={columns} renderRow={(item) => renderRow(item, role)} data={data}/>
+              <Table 
+                  columns={columns} 
+                  renderRow={(item) => renderRow(item, role)} data={data}
+              />
        </div>
 
         {/* pagination  */}

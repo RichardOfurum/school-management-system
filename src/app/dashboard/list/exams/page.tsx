@@ -8,6 +8,7 @@ import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Class, Exam, Prisma, Subject, Teacher } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type ExamList = Exam & {
   lesson:{
@@ -36,8 +37,8 @@ const renderRow = (item:ExamList, role: string | undefined) => (
             {
                 (role === "admin" ||  role === "teacher") && (
                   <>
-                      <FormModal table="exam" type="update" data={item} />
-                      <FormModal table="exam" type="delete" id={item.id} />
+                      <FormContainer table="exam" type="update" data={item} />
+                      <FormContainer table="exam" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -185,7 +186,7 @@ const ExamListPage = async({
                           </button>
                           {
                               (role === "admin" || role === "teacher") && (
-                                <FormModal table="exam" type="create" />
+                                <FormContainer table="exam" type="create" />
                               )
                           }
                       </div>
