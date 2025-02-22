@@ -4,7 +4,10 @@
 import { revalidatePath } from "next/cache";
 import {
   ClassSchema,
+  EventSchema,
   ExamSchema,
+  parentSchema,
+  ParentSchema,
   studentSchema,
   StudentSchema,
   SubjectSchema,
@@ -296,7 +299,9 @@ export const deleteTeacher = async (
 ) => {
   const id = data.get("id") as string;
   try {
-    // await clerkClient.users.deleteUser(id);
+    const clerk = await clerkClient();
+    
+    await clerk.users.deleteUser(id);
 
     await prisma.teacher.delete({
       where: {
@@ -583,6 +588,275 @@ export const deleteExam = async (
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+
+export const createParent = async (
+  currentState: CurrentState,
+  data: ParentSchema
+) => {
+  try {
+    // Validate input data
+    const validatedData = parentSchema.parse(data);
+
+    // Await clerkClient properly
+    const clerk = await clerkClient();
+
+    // Create a user in Clerk
+    const user = await clerk.users.createUser({
+      username: validatedData.username,
+      password: validatedData.password,
+      firstName: validatedData.name,
+      lastName: validatedData.surname,
+      publicMetadata: { role: "parent" },
+    });
+
+    // Create a parent record in Prisma
+    await prisma.parent.create({
+      data: {
+        id: user.id,
+        username: validatedData.username,
+        name: validatedData.name,
+        surname: validatedData.surname,
+        email: validatedData.email || null,
+        phone: validatedData.phone,
+        address: validatedData.address,
+        students: {
+          connect: validatedData.students?.map((studentId) => ({ id: studentId })) || [],
+        },
+      },
+    });
+
+    // Revalidate the path if needed
+    // revalidatePath("/list/parents");
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error("Error creating parent:", err);
+
+    // Handle validation errors from Zod
+    if (err.name === 'ZodError') {
+      const errors = err.errors.map((e: any) => e.message).join(", ");
+      return { success: false, error: `Validation error: ${errors}` };
+    }
+
+    // Handle Clerk-specific errors
+    if (err.errors?.[0]?.message) {
+      return { success: false, error: err.errors[0].message };
+    }
+
+    // Handle Prisma-specific errors (e.g., unique constraint violations)
+    if (err.code === 'P2002') {
+      const field = err.meta?.target?.[0];
+      return { success: false, error: `A parent with this ${field} already exists.` };
+    }
+
+    // Handle other generic errors
+    return { success: false, error: "Failed to create parent. Please try again." };
+  }
+};
+
+
+export const updateParent = async (
+  currentState: CurrentState,
+  data: ParentSchema
+) => {
+  try {
+    const validatedData = parentSchema.parse(data);
+
+    if (!validatedData.id) {
+      return { success: false, error: "Parent ID is required for updating." };
+    }
+
+    const clerk = await clerkClient();
+
+    await clerk.users.updateUser(validatedData.id, {
+      username: validatedData.username,
+      ...(validatedData.password !== "" && { password: validatedData.password }),
+      firstName: validatedData.name,
+      lastName: validatedData.surname,
+    });
+
+    // Fetch the current students linked to the parent
+    const currentParent = await prisma.parent.findUnique({
+      where: { id: validatedData.id },
+      select: { students: { select: { id: true } } },
+    });
+
+    if (!currentParent) {
+      return { success: false, error: "Parent not found." };
+    }
+
+    const currentStudentIds = currentParent.students.map((student) => student.id);
+    const newStudentIds = validatedData.students || [];
+
+    // Find students to be removed
+    const studentsToRemove = currentStudentIds.filter(id => !newStudentIds.includes(id));
+
+    // Find students to be added
+    const studentsToAdd = newStudentIds.filter(id => !currentStudentIds.includes(id));
+
+    await prisma.$transaction(async (tx) => {
+      // **Step 1: Disconnect students being removed**
+      if (studentsToRemove.length > 0) {
+        await tx.student.updateMany({
+          where: { id: { in: studentsToRemove } },
+          data: { parentId: null },
+        });
+      }
+
+      // **Step 2: Update Parent record**
+      await tx.parent.update({
+        where: { id: validatedData.id },
+        data: {
+          username: validatedData.username,
+          name: validatedData.name,
+          surname: validatedData.surname,
+          email: validatedData.email || null,
+          phone: validatedData.phone,
+          address: validatedData.address,
+        },
+      });
+
+      // **Step 3: Reconnect new students**
+      if (studentsToAdd.length > 0) {
+        await tx.student.updateMany({
+          where: { id: { in: studentsToAdd } },
+          data: { parentId: validatedData.id },
+        });
+      }
+    });
+
+    return { success: true, error: false };
+  } catch (err: any) {
+    console.error("Error updating parent:", err);
+
+    if (err.name === 'ZodError') {
+      const errors = err.errors.map((e: any) => e.message).join(", ");
+      return { success: false, error: `Validation error: ${errors}` };
+    }
+
+    if (err.errors?.[0]?.message) {
+      return { success: false, error: err.errors[0].message };
+    }
+
+    if (err.code === 'P2002') {
+      const field = err.meta?.target?.[0];
+      return { success: false, error: `A parent with this ${field} already exists.` };
+    }
+
+    return { success: false, error: "Failed to update parent. Please try again." };
+  }
+};
+
+
+
+
+
+export const deleteParent = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+  try {
+    const clerk = await clerkClient();
+
+    // Remove parent-child relationship before deleting the parent
+    const updateStudent = await prisma.student.updateMany({
+      where: { parentId: id },
+      data: { parentId: null }, // Set parentId to null
+    });
+
+    if (updateStudent) {
+      // Delete the user in Clerk
+      await clerk.users.deleteUser(id);
+
+      // Delete the parent record in Prisma
+      await prisma.parent.delete({
+        where: { id },
+      });
+    }
+
+    // revalidatePath("/list/parents");
+    return { success: true, error: false };
+  } catch (err) {
+    console.error("Error deleting parent:", err);
+    return { success: false, error: "Failed to delete parent. Ensure no related records exist." };
+    // return { success: false, error: true };
+  }
+};
+
+
+export const createEvent = async (
+  currentState: CurrentState,
+  data: EventSchema
+) => {
+  try {
+    // const classIdmod = data.classId  === "" ? null : data.classId;
+    await prisma.event.create({
+      
+      data: {
+        title: data.title,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        classId: data.classId ?? null,
+        // classId: classIdmod
+      },
+    });
+
+    // revalidatePath("/list/events");
+    return { success: true, error: false };
+  } catch (err) {
+    console.error("Error creating event:", err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateEvent = async (
+  currentState: CurrentState,
+  data: EventSchema
+) => {
+  try {
+    await prisma.event.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        title: data.title,
+        description: data.description,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        classId: data.classId ?? null,
+      },
+    });
+
+    // revalidatePath("/list/events");
+    return { success: true, error: false };
+  } catch (err) {
+    console.error("Error updating event:", err);
+    return { success: false, error: true };
+  }
+};
+
+export const deleteEvent = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+  try {
+    await prisma.event.delete({
+      where: {
+        id: parseInt(id, 10),
+      },
+    });
+
+    // revalidatePath("/list/events");
+    return { success: true, error: false };
+  } catch (err) {
+    console.error("Error deleting event:", err);
     return { success: false, error: true };
   }
 };

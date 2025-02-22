@@ -3,14 +3,13 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import FormModal from '@/components/FormModal';
 import { Parent, Prisma, Student } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type ParentList = Parent & {students: Student[]}
-
 
 
 const renderRow = (item:ParentList,  role: string | undefined) => (
@@ -33,8 +32,8 @@ const renderRow = (item:ParentList,  role: string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModal table="parent" type="update" data={item} />
-                      <FormModal table="parent" type="delete" id={item.id} />
+                      <FormContainer table="parent" type="update" data={item} />
+                      <FormContainer table="parent" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -137,7 +136,7 @@ const ParentListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                <FormModal table="parent" type="create" />
+                                <FormContainer table="parent" type="create" />
                               )
                           }
                       </div>

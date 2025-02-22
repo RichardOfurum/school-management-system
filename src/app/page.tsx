@@ -8,7 +8,6 @@ const Homepage = () => {
       <Link href={`/dashboard/admin`}>Dashboard</Link>
       <br />
       <Link href={`/sign-in`}>Sign In</Link>
-
     </div>
   )
 }

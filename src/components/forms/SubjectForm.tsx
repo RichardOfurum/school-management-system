@@ -76,12 +76,15 @@ const SubjectForm = ({
 
       useEffect(() =>{
             if (state.success) {
-                toast(`Subject has been ${type === "create" ? "created": "updated"}!`);
+                toast.success(`Subject has been ${type === "create" ? "created": "updated"}!`);
                 router.refresh();
                 setOpen(false);
             }
             
-            setIsSubmitting(false);
+            if (state.error) {
+                setIsSubmitting(false);
+                toast.error(state.error);
+              }
       },[state, router, type, setOpen]);
 
     //   const { teachers } = relatedData;
