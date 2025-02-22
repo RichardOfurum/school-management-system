@@ -22,8 +22,8 @@ export const teacherSchema = z.object({
   id: z.string().optional(),
   username: z
     .string()
-    .min(10, { message: "Username must be at least 10 characters long!" })
-    .max(20, { message: "Username must be at most 20 characters long!" }),
+    .min(10, { message: "Username must be at least 10 characters long!" }),
+    // .max(20, { message: "Username must be at most 20 characters long!" }),
   // password: z
   //   .string()
   //   .min(8, { message: "Password must be at least 8 characters long!" })
@@ -68,8 +68,8 @@ export const studentSchema = z.object({
   id: z.string().optional(),
   username: z
     .string()
-    .min(10, { message: "Username must be at least 10 characters long!" })
-    .max(20, { message: "Username must be at most 20 characters long!" }),
+    .min(10, { message: "Username must be at least 10 characters long!" }),
+    // .max(20, { message: "Username must be at most 20 characters long!" }),
   // password: z
   //   .string()
   //   .min(8, { message: "Password must be at least 8 characters long!" })
@@ -121,3 +121,60 @@ export const examSchema = z.object({
 });
 
 export type ExamSchema = z.infer<typeof examSchema>;
+
+
+export const parentSchema = z.object({
+  id: z.string().optional(), // Optional for creation, required for updates
+  username: z
+    .string()
+    .min(10, { message: "Username must be at least 10 characters long!" }),
+    // .max(20, { message: "Username must be at most 20 characters long!" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long!" })
+    .refine(
+      (value) => /[A-Z]/.test(value),
+      "Password must contain at least one capital letter!"
+    )
+    .refine(
+      (value) => /[0-9]/.test(value),
+      "Password must contain at least one number!"
+    )
+    .refine(
+      (value) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value),
+      "Password must contain at least one special character!"
+    )
+    .optional()
+    .or(z.literal("")), // Optional for updates, required for creation
+  name: z.string().min(1, { message: "First name is required!" }),
+  surname: z.string().min(1, { message: "Last name is required!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .optional()
+    .or(z.literal("")), // Optional field
+  phone: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits long!" })
+    .max(15, { message: "Phone number must be at most 15 digits long!" }),
+  address: z.string().min(1, { message: "Address is required!" }),
+  students: z.array(z.string()).optional(), // Array of student IDs
+});
+
+export type ParentSchema = z.infer<typeof parentSchema>;
+
+
+export const eventSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  title: z.string().min(1, { message: "Title is required!" }),
+  description: z.string().min(1, { message: "Description is required!" }),
+  startTime: z.coerce.date({ message: "Start time is required!" }),
+  endTime: z.coerce.date({ message: "End time is required!" }),
+  classId: z.coerce.number().optional(), // Optional foreign key
+}).refine((data) => data.endTime > data.startTime, {
+  message: "End time must be after start time!",
+  path: ["endTime"], // This targets the specific field in the error message
+});
+
+export type EventSchema = z.infer<typeof eventSchema>;
+
