@@ -8,6 +8,7 @@ import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Announcement, Class, Prisma } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type AnnouncementList = Announcement & {class: Class}
 
@@ -31,8 +32,8 @@ const renderRow = (item:AnnouncementList, role: string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModal table="announcement" type="update" data={item}/>
-                      <FormModal table="announcement" type="delete" id={item.id} />
+                      <FormContainer table="announcement" type="update" data={item}/>
+                      <FormContainer table="announcement" type="delete" id={item.id} />
                   </>
                   
                 )
@@ -138,19 +139,32 @@ const AnnouncementListPage = async({
 
 
 
+  // const [data, count] = await prisma.$transaction([
+  //   prisma.announcement.findMany({
+  //     where:query,
+  //     include:{
+  //       class:true,
+  //     },
+  //     take: ITEM_PER_PAGE,
+  //     skip: ITEM_PER_PAGE * (p - 1)
+  // }),
+
+  //  prisma.announcement.count({where:query})
+  // ]);
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({
-      where:query,
-      include:{
-        class:true,
+      where: query,
+      include: {
+        class: true, // Include related class data
+      },
+      orderBy: {
+        createdAt: "desc", // Order by createdAt in descending order (newest first)
       },
       take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1)
-  }),
-
-   prisma.announcement.count({where:query})
+      skip: ITEM_PER_PAGE * (p - 1),
+    }),
+    prisma.announcement.count({ where: query }),
   ]);
-
 
   return (
     <div className='bg-white p-4 rounded-md flex-1 m-4 mt-0 flex flex-col justify-between'>
@@ -171,7 +185,7 @@ const AnnouncementListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                <FormModal table="announcement" type="create" />
+                                <FormContainer table="announcement" type="create" />
                               )
                           }
                       </div>

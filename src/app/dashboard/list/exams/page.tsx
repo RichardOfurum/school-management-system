@@ -25,6 +25,8 @@ const renderRow = (item:ExamList, role: string | undefined) => (
     
     <td className='flex items-center gap-4 p-4 font-semibold'>
         {item.lesson.subject.name}
+        <br />
+        {item.title}
     </td>
     
     <td className=''>{item.lesson.class.name}</td>
@@ -152,6 +154,9 @@ const ExamListPage = async({
   const [data, count] = await prisma.$transaction([
     prisma.exam.findMany({
       where:query,
+      orderBy: {
+        createdAt: "desc", // Order by createdAt in descending order (newest first)
+      },
       include:{
         lesson:{
           select:{

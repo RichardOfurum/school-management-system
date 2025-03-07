@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "@/components/ui/Header";
 
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -22,9 +23,9 @@ export default function RootLayout({
     <ClerkProvider>
         <html lang="en">
           <body>
-            
-            {children}
-            <ToastContainer position="bottom-right" theme="dark"/>
+                {/* <Header/> */}
+                {children}
+                <ToastContainer position="bottom-right" theme="dark"/>
             </body>
         </html>
     </ClerkProvider>

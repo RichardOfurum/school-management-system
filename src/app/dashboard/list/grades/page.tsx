@@ -36,8 +36,8 @@ const renderRow = (item:GradeList, role:string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormContainer table="class" type="update" data={item} />
-                      <FormContainer table="class" type="delete" id={item.id} />
+                      <FormContainer table="grade" type="update" data={item} />
+                      <FormContainer table="grade" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -47,7 +47,7 @@ const renderRow = (item:GradeList, role:string | undefined) => (
 );
 
 
-const ClassListPage = async({
+const GradeListPage = async({
   searchParams
 }:{
   searchParams:{[key:string]:string | undefined}
@@ -111,6 +111,9 @@ const ClassListPage = async({
               },
             },
           },
+          orderBy: {
+            level: "asc", // Order by createdAt in descending order (newest first)
+          },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1)
   }),
@@ -138,7 +141,7 @@ const ClassListPage = async({
                           </button>
                           {
                               role === "admin" && (
-                                <FormContainer table="class" type="create" />
+                                <FormContainer table="grade" type="create" />
                               )
                           }
                       </div>
@@ -157,4 +160,4 @@ const ClassListPage = async({
   )
 }
 
-export default ClassListPage
+export default GradeListPage

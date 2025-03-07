@@ -4,6 +4,7 @@ import React from 'react';
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import BigCalendarContainer from '@/components/BigCalendarContainer';
+import Link from 'next/link';
 
 const ParentPage = async() => {
   const { userId } = await auth();
@@ -22,7 +23,8 @@ const ParentPage = async() => {
           <div className="w-full" key={student.id}>
             <div className="h-full bg-white p-4 rounded-md">
               <h1 className="text-xl font-semibold">
-                Schedule ({student.name + " " + student.surname})
+
+                Schedule <Link href={`/dashboard/list/students/${student.id}`}>({student.name + " " + student.surname})</Link> 
               </h1>
               <BigCalendarContainer type="classId" id={student.classId} />
             </div>

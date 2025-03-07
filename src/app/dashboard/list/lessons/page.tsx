@@ -8,6 +8,7 @@ import { Class, Lesson, Prisma, Subject, Teacher } from '@prisma/client';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type LessonList = Lesson & {subject: Subject,} & {class: Class} & {teacher: Teacher}
 
@@ -16,21 +17,48 @@ type LessonList = Lesson & {subject: Subject,} & {class: Class} & {teacher: Teac
 const renderRow = (item:LessonList, role: string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     
-    <td className='flex items-center gap-4 p-4 font-semibold'>
-        {item.subject.name}
+    <td className='flex  gap-4 p-4 flex-col justify-items-start'>
+        <span className='font-semibold'>{item.subject.name}</span>
+        <span className='font-thin'>{item.name}</span>
     </td>
     
     <td className=''>{item.class.name}</td>
-    <td className='hidden md:table-cell'>{item.teacher.name + " " + item.teacher.surname}</td>    
+    <td className='hidden md:table-cell'>{item.teacher.name + " " + item.teacher.surname}</td> 
+
+    <td className='hidden md:table-cell font-semibold'>
+        <span className=''>
+            {new Intl.DateTimeFormat("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false, // Use 24-hour format
+            }).format(new Date(item.startTime))}
+          </span>
+          <br /> <br />
+        <span className=''>
+            {new Intl.DateTimeFormat("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+              second: "2-digit",
+              hour12: false, // Use 24-hour format
+            }).format(new Date(item.endTime))}
+          </span>
+    </td>    
 
     <td>
       <div className='flex items-center gap-2'>
             
             {
-                role === "admin" && (
+                (role === "admin" || role === "teacher") && (
                   <>
-                      <FormModal table="lesson" type="update" data={item} />
-                      <FormModal table="lesson" type="delete" id={item.id} />
+                      <FormContainer table="lesson" type="update" data={item} />
+                      <FormContainer table="lesson" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -65,7 +93,12 @@ const LessonListPage = async({
       accessor:"teacher", 
       className:"hidden md:table-cell"
     },
-    ...(role === "admin" ? [{
+    {
+      header:"Date/Time",  
+      accessor:"date/time", 
+      className:"hidden md:table-cell"
+    },
+    ...((role === "admin" || role === "teacher") ? [{
       header:"Actions",  
       accessor:"actions",  
     }] : [])
@@ -105,6 +138,9 @@ const LessonListPage = async({
   const [data, count] = await prisma.$transaction([
     prisma.lesson.findMany({
       where:query,
+      orderBy: {
+        createdAt: "desc", // Order by createdAt in descending order (newest first)
+      },
       include:{
         subject:{select:{name:true}},
         class:{select:{name:true}},
@@ -134,8 +170,8 @@ const LessonListPage = async({
                               <Image src="/sort.png" alt="" height={14} width={14}/>
                           </button>
                           {
-                              role === "admin" && (
-                                <FormModal table="lesson" type="create" />
+                              (role === "admin"|| role === "teacher") && (
+                                <FormContainer table="lesson" type="create" />
                               )
                           }
                       </div>

@@ -158,7 +158,7 @@ export const parentSchema = z.object({
     .min(10, { message: "Phone number must be at least 10 digits long!" })
     .max(15, { message: "Phone number must be at most 15 digits long!" }),
   address: z.string().min(1, { message: "Address is required!" }),
-  students: z.array(z.string()).optional(), // Array of student IDs
+  // students: z.array(z.string()).optional(), // Array of student IDs
 });
 
 export type ParentSchema = z.infer<typeof parentSchema>;
@@ -178,3 +178,119 @@ export const eventSchema = z.object({
 
 export type EventSchema = z.infer<typeof eventSchema>;
 
+export const lessonSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  name: z.string().min(1, { message: "Lesson name is required!" }),
+  day: z.string().optional(), // Optional because it will be derived from 
+  startTime: z.coerce.date({ message: "Start time is required!" }),
+  endTime: z.coerce.date({ message: "End time is required!" }),
+  subjectId: z.coerce.number().min(1, { message: "Subject ID is required!" }),
+  classId: z.coerce.number().min(1, { message: "Class ID is required!" }),
+  teacherId: z.string().optional(),
+}).refine((data) => data.endTime > data.startTime, {
+  message: "End time must be after start time!",
+  path: ["endTime"], // This targets the specific field in the error message
+});
+
+export type LessonSchema = z.infer<typeof lessonSchema>;
+
+export const adminSchema = z.object({
+  id: z.string().optional(), // Optional for creation, required for updates
+  username: z.string().min(1, { message: "Username is required!" }).max(50, { message: "Username must be at most 50 characters long!" }),
+  firstName: z.string().min(1, { message: "First name is required!" }),
+  surname: z.string().min(1, { message: "Last name is required!" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long!" })
+    .refine(
+      (value) => /[A-Z]/.test(value),
+      "Password must contain at least one capital letter!"
+    )
+    .refine(
+      (value) => /[0-9]/.test(value),
+      "Password must contain at least one number!"
+    )
+    .refine(
+      (value) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value),
+      "Password must contain at least one special character!"
+    )
+    .optional()
+    .or(z.literal("")), // Optional for updates, required for creation
+});
+
+export type AdminSchema = z.infer<typeof adminSchema>;
+
+
+export const announcementSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  title: z.string().min(1, { message: "Title is required!" }),
+  description: z.string().min(1, { message: "Description is required!" }),
+  date: z.coerce.date({ message: "Date is required!" }),
+  classId: z.coerce.number().optional(), // Optional foreign key
+});
+
+export type AnnouncementSchema = z.infer<typeof announcementSchema>;
+
+
+export const gradeSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  level: z.coerce.number().min(1, { message: "Grade level is required!" }).refine(
+    (value) => Number.isInteger(value),
+    { message: "Grade level must be an integer!" }
+  ),
+  createdAt: z.coerce.date().optional(), // Automatically set by the database
+  updatedAt: z.coerce.date().optional(), // Automatically set by the database
+});
+
+export type GradeSchema = z.infer<typeof gradeSchema>;
+
+export const assignmentSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  title: z.string().min(1, { message: "Title is required!" }),
+  startDate: z.coerce.date({ message: "Start date is required!" }),
+  dueDate: z.coerce.date({ message: "Due date is required!" }),
+  lessonId: z.coerce.number().min(1, { message: "Lesson ID is required!" }),
+  createdAt: z.coerce.date().optional(), // Automatically set by the database
+  updatedAt: z.coerce.date().optional(), // Automatically set by the database
+}).refine((data) => data.dueDate > data.startDate, {
+  message: "Due date must be after start date!",
+  path: ["dueDate"], // This targets the specific field in the error message
+});
+
+export type AssignmentSchema = z.infer<typeof assignmentSchema>;
+
+export const resultSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  score: z.coerce.number().min(0, { message: "Score must be a non-negative number!" }),
+
+  examId: z.coerce.number().optional(), // Optional foreign key
+  assignmentId: z.coerce.number().optional(), // Optional foreign key
+  studentId: z.string().min(1, { message: "Student ID is required!" }),
+
+  createdAt: z.coerce.date().optional(), // Automatically set by the database
+  updatedAt: z.coerce.date().optional(), // Automatically set by the database
+});
+
+export type ResultSchema = z.infer<typeof resultSchema>;
+
+
+export const postSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  title: z.string().min(1, { message: "Post Title required!" }),
+  description: z.string().min(1, { message: "Post description required!" }), // Corrected typo here
+  image: z.string().optional(),
+  createdAt: z.coerce.date().optional(), // Automatically set by the database
+  updatedAt: z.coerce.date().optional(), // Automatically set by the database
+});
+
+export type PostSchema = z.infer<typeof postSchema>;
+
+export const prospectusSchema = z.object({
+  id: z.coerce.number().optional(), // Optional for creation, required for updates
+  title: z.string()
+    .min(1, { message: "Title required!" })
+    .max(100, { message: "Title must be less than 100 characters!" }),
+  file: z.string().optional(),
+});
+
+export type ProspectusSchema = z.infer<typeof prospectusSchema>;

@@ -11,12 +11,16 @@ async function main() {
     data: {
       id: "admin1",
       username: "admin1",
+      firstName:"adminFirstName",
+      surname:"adminSurname",
     },
   });
   await prisma.admin.create({
     data: {
       id: "admin2",
       username: "admin2",
+      firstName:"adminFirstName",
+      surname:"adminSurname",
     },
   });
 
