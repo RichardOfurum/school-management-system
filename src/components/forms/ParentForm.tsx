@@ -63,27 +63,7 @@ const ParentForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  // Safely access the students array from relatedData
-  // const students = relatedData?.students || [];
 
-//   console.log(students);
-
-//   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const { value, checked } = event.target;
-//     const studentObj = students.find((s:any) => s.id === value); // Get full student object
-
-//     if (!studentObj) return; // Prevent errors if student is not found
-
-//     setSelectedStudents((prev) =>
-//         checked ? [...prev, studentObj] : prev.filter((s:any) => s.id !== value)
-//     );
-// };
-
-  // useEffect(() => {
-  //   if (data?.students) {
-  //       setSelectedStudents(data.students);
-  //   }
-  //   }, [data]);
 
   return (
     <form
@@ -171,43 +151,6 @@ const ParentForm = ({
           )}
         </div>
       </div>
-
-      {/* Assign Students */}
-      {/* <div className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-          Assign Students
-        </h2>
-        <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-600">Students</label>
-                    <div className="border border-gray-300 rounded-md p-4 space-y-2 max-h-40 overflow-y-auto scrollbar-thin">
-                      
-                        {students.map((student: { id: string; name: string; surname: string }) => (
-                            <label
-                            key={student.id}
-                            className="flex items-center space-x-2 text-sm"
-                            >
-
-                                <input
-                                    type="checkbox"
-                                    value={student.id}
-                                    {...register("students")}
-                                    checked={selectedStudents.some((s:any) => s.id === student.id)} // Fix: Compare objects correctly
-                                    onChange={handleCheckboxChange}
-                                    className="rounded-md ring-[1.5px] ring-gray-300 focus:ring-blue-500"
-                                />
-
-                            <span>{student.name + " " + student.surname}</span>
-                            </label>
-                        ))}
-                    </div>
-
-                {errors.students?.message && (
-                    <p className="text-xs text-red-400">
-                    {errors.students.message.toString()}
-                    </p>
-                )}
-                </div>
-      </div> */}
 
       {/* Error Message */}
       {state.error && (

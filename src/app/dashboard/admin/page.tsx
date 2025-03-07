@@ -39,10 +39,10 @@ const AdminPage = ({
 
             {/* BOTTOM CHART  */}
 
-            <div className="w-full h-[500px]">
-                {/* <FinanceChart /> */}
+            {/* <div className="w-full h-[500px]">
+                <FinanceChart />
                 
-            </div>
+            </div> */}
         </div>
 
         {/* RIGHT */}

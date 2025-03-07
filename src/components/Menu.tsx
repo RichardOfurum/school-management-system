@@ -121,24 +121,24 @@ const menuItems = [
         href: "/dashboard/list/prospectus",
         visible: ["admin",],
       },
-      {
-        icon: "/profile.png",
-        label: "Profile",
-        href: "/dashboard/profile",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/setting.png",
-        label: "Settings",
-        href: "/dashboard/settings",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/logout.png",
-        label: "Logout",
-        href: "/logout",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
+      // {
+      //   icon: "/profile.png",
+      //   label: "Profile",
+      //   href: "/dashboard/profile",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/setting.png",
+      //   label: "Settings",
+      //   href: "/dashboard/settings",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   icon: "/logout.png",
+      //   label: "Logout",
+      //   href: "/logout",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
     ],
   },
 ];
