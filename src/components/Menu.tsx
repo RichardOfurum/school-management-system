@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { currentUser } from "@clerk/nextjs/server";
+import { Newspaper } from "lucide-react";
 
 const menuItems = [
   {
@@ -18,6 +19,7 @@ const menuItems = [
         href: "/dashboard/list/teachers",
         visible: ["admin", "teacher"],
       },
+   
       {
         icon: "/student.png",
         label: "Students",
@@ -84,12 +86,12 @@ const menuItems = [
         href: "/dashboard/list/events",
         visible: ["admin", "teacher", "student", "parent"],
       },
-      {
-        icon: "/message.png",
-        label: "Messages",
-        href: "/dashboard/list/messages",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
+      // {
+      //   icon: "/message.png",
+      //   label: "Messages",
+      //   href: "/dashboard/list/messages",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
       {
         icon: "/announcement.png",
         label: "Announcements",
@@ -101,6 +103,24 @@ const menuItems = [
   {
     title: "OTHER",
     items: [
+      {
+        icon: "/admin.png",
+        label: "Admin",
+        href: "/dashboard/list/admin",
+        visible: ["admin",],
+      },
+      {
+        icon: "/post.png",
+        label: "Post",
+        href: "/dashboard/list/post",
+        visible: ["admin",],
+      },
+      {
+        icon: "/prospectus.png",
+        label: "Prospectus",
+        href: "/dashboard/list/prospectus",
+        visible: ["admin",],
+      },
       {
         icon: "/profile.png",
         label: "Profile",
@@ -142,12 +162,20 @@ const Menu = async() => {
                           href={item.href}
                           className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
                         >
-                          <Image
-                            src={item.icon} 
-                            width={20}
-                            height={20}
-                            alt={item.label}
-                          />
+
+                          {
+                            item.label === "post" ? (
+                              <Newspaper />
+                            ) : (
+                            <Image
+                              src={item.icon} 
+                              width={20}
+                              height={20}
+                              alt={item.label}
+                              className="grayscale"
+                            />)
+                          }
+                          
                           <span className="hidden lg:block">{item.label}</span>
                         </Link>
                       )

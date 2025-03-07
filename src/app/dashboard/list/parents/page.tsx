@@ -17,7 +17,7 @@ const renderRow = (item:ParentList,  role: string | undefined) => (
     <td className='flex items-center gap-4 p-4'>
       
       <div className='flex flex-col'>
-          <h2 className='font-semibold'>{item.name}</h2>
+          <h2 className='font-semibold'>{item.name + " " + item.surname}</h2>
           <p className='text-xs text-gray-500'>{item?.email}</p>
       </div>
     </td>

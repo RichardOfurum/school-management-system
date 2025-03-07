@@ -14,22 +14,26 @@ datasource db {
 // }
 
 model Admin {
-  id       String @id
-  username String @unique
+  id        String   @id
+  username  String   @unique
+  firstName String
+  surname   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Student {
-  id          String       @id
-  username    String       @unique
-  name        String
-  surname     String
-  email       String?      @unique
-  phone       String?      @unique
-  address     String
-  img         String?
-  bloodType   String
-  sex         String
-  createdAt   DateTime     @default(now())
+  id        String  @id
+  username  String  @unique
+  name      String
+  surname   String
+  email     String? @unique
+  phone     String? @unique
+  address   String
+  img       String?
+  bloodType String
+  sex       String
+
   parentId    String? // Allow NULL values explicitly
   parent      Parent?      @relation(fields: [parentId], references: [id], onDelete: SetNull)
   classId     Int
@@ -39,31 +43,10 @@ model Student {
   attendances Attendance[]
   results     Result[]
   birthday    DateTime
-}
 
-// model Student {
-//   id          String       @id
-//   username    String       @unique
-//   name        String
-//   surname     String
-//   email       String?      @unique
-//   phone       String?      @unique
-//   address     String
-//   img         String?
-//   bloodType   String
-//   sex         String
-//   createdAt   DateTime     @default(now())
-//   parentId    String?
-//   parent      Parent?      @relation(fields: [parentId], references: [id])
-//   // parent      Parent?      @relation(fields: [parentId], references: [id], onDelete: SetNull)
-//   classId     Int
-//   class       Class        @relation(fields: [classId], references: [id])
-//   gradeId     Int
-//   grade       Grade        @relation(fields: [gradeId], references: [id])
-//   attendances Attendance[]
-//   results     Result[]
-//   birthday    DateTime
-// }
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
+}
 
 model Teacher {
   id        String    @id
@@ -76,11 +59,13 @@ model Teacher {
   img       String?
   bloodType String
   sex       String
-  createdAt DateTime  @default(now())
   subjects  Subject[]
   lessons   Lesson[]
   classes   Class[]
   birthday  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Parent {
@@ -91,16 +76,19 @@ model Parent {
   email     String?   @unique
   phone     String    @unique
   address   String
-  createdAt DateTime  @default(now())
   students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt // Add a default value
 }
 
 model Grade {
   id    Int @id @default(autoincrement())
   level Int @unique
 
-  students Student[]
-  classess Class[]
+  students  Student[]
+  classess  Class[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt // Add a default value
 }
 
 model Class {
@@ -116,13 +104,17 @@ model Class {
   grade         Grade          @relation(fields: [gradeId], references: [id])
   events        Event[]
   announcements Announcement[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt // Add a default value
 }
 
 model Subject {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  teachers Teacher[]
-  lessons  Lesson[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  teachers  Teacher[]
+  lessons   Lesson[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt // Add a default value
 }
 
 model Lesson {
@@ -141,6 +133,8 @@ model Lesson {
   exams       Exam[]
   assignments Assignment[]
   attendances Attendance[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now()) @updatedAt // Add a default value
 }
 
 model Exam {
@@ -149,9 +143,11 @@ model Exam {
   startTime DateTime
   endTime   DateTime
 
-  lessonId Int
-  lesson   Lesson   @relation(fields: [lessonId], references: [id])
-  results  Result[]
+  lessonId  Int
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  results   Result[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Assignment {
@@ -160,9 +156,11 @@ model Assignment {
   startDate DateTime
   dueDate   DateTime
 
-  lessonId Int
-  lesson   Lesson   @relation(fields: [lessonId], references: [id])
-  results  Result[]
+  lessonId  Int
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  results   Result[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Result {
@@ -175,6 +173,8 @@ model Result {
   assignment   Assignment? @relation(fields: [assignmentId], references: [id])
   studentId    String
   student      Student     @relation(fields: [studentId], references: [id])
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @default(now()) @updatedAt // Add a default value
 }
 
 model Attendance {
@@ -183,9 +183,11 @@ model Attendance {
   present Boolean
 
   studentId String
-  student   Student @relation(fields: [studentId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id])
   lessonId  Int
-  lesson    Lesson  @relation(fields: [lessonId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Event {
@@ -195,8 +197,10 @@ model Event {
   startTime   DateTime
   endTime     DateTime
 
-  classId Int?
-  class   Class? @relation(fields: [classId], references: [id])
+  classId   Int?
+  class     Class?   @relation(fields: [classId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
 model Announcement {
@@ -205,211 +209,23 @@ model Announcement {
   description String
   date        DateTime
 
-  classId Int?
-  class   Class? @relation(fields: [classId], references: [id])
+  classId   Int?
+  class     Class?   @relation(fields: [classId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt // Add a default value
 }
 
-// generator client {
-//   provider = "prisma-client-js"
-// }
+model Post {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt // Add a default value
+}
 
-// datasource db {
-//   provider = "mongodb"
-//   url      = env("DATABASE_URL")
-// }
-
-// model Admin {
-//   id       String @id @default(auto()) @map("_id") @db.ObjectId
-//   username String @unique
-// }
-
-// model Student {
-//   id        String  @id @default(auto()) @map("_id") @db.ObjectId
-//   username  String  @unique
-//   name      String
-//   surname   String
-//   email     String? @unique
-//   phone     String? @unique
-//   address   String
-//   img       String?
-//   bloodType String
-//   sex       UserSex
-
-//   parentId String @db.ObjectId
-//   parent   Parent @relation(fields: [parentId], references: [id])
-
-//   createdAt DateTime @default(now())
-
-//   classId String @db.ObjectId
-//   class   Class  @relation(fields: [classId], references: [id])
-
-//   gradeId    String       @db.ObjectId
-//   grade      Grade        @relation(fields: [gradeId], references: [id])
-//   attendance Attendance[]
-//   results    Result[]
-// }
-
-// model Teacher {
-//   id         String    @id @default(auto()) @map("_id") @db.ObjectId
-//   username   String    @unique
-//   name       String
-//   surname    String
-//   email      String?   @unique
-//   phone      String?   @unique
-//   address    String
-//   img        String?
-//   bloodType  String
-//   sex        UserSex
-//   createdAt  DateTime  @default(now())
-//   subjects   Subject[] @relation(fields: [subjectIds], references: [id])
-//   subjectIds String[]  @db.ObjectId
-//   lessons    Lesson[]
-//   classes    Class[]
-// }
-
-// model Parent {
-//   id        String    @id @default(auto()) @map("_id") @db.ObjectId
-//   username  String    @unique
-//   name      String
-//   surname   String
-//   email     String?   @unique
-//   phone     String    @unique
-//   address   String
-//   sex       UserSex
-//   students  Student[]
-//   createdAt DateTime  @default(now())
-// }
-
-// model Grade {
-//   id       String    @id @default(auto()) @map("_id") @db.ObjectId
-//   level    Int       @unique
-//   students Student[]
-//   classes  Class[]
-// }
-
-// model Class {
-//   id            String         @id @default(auto()) @map("_id") @db.ObjectId
-//   name          String         @unique
-//   capacity      Int
-//   supervisorId  String         @db.ObjectId
-//   supervisor    Teacher        @relation(fields: [supervisorId], references: [id])
-//   lessons       Lesson[]
-//   students      Student[]
-//   gradeId       String         @db.ObjectId
-//   grade         Grade          @relation(fields: [gradeId], references: [id])
-//   events        Event[]
-//   announcements Announcement[]
-// }
-
-// model Subject {
-//   id         String    @id @default(auto()) @map("_id") @db.ObjectId
-//   name       String    @unique
-//   teachers   Teacher[] @relation(fields: [teacherIds], references: [id])
-//   teacherIds String[]  @db.ObjectId
-//   lessons    Lesson[]
-// }
-
-// model Lesson {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   name      String
-//   day       Day
-//   startTime DateTime
-//   endTime   DateTime
-
-//   subjectId String?  @db.ObjectId
-//   subject   Subject? @relation(fields: [subjectId], references: [id])
-
-//   classId String? @db.ObjectId
-//   class   Class?  @relation(fields: [classId], references: [id])
-
-//   teacherId String?  @db.ObjectId
-//   teacher   Teacher? @relation(fields: [teacherId], references: [id])
-
-//   exams       Exam[]
-//   assignments Assignment[]
-//   attendance  Attendance[]
-// }
-
-// model Exam {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title     String
-//   startTime DateTime
-//   endTime   DateTime
-
-//   lessonId String   @db.ObjectId
-//   lesson   Lesson   @relation(fields: [lessonId], references: [id])
-//   results  Result[]
-// }
-
-// model Assignment {
-//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title     String
-//   startDate DateTime
-//   dueDate   DateTime
-
-//   lessonId String   @db.ObjectId
-//   lesson   Lesson   @relation(fields: [lessonId], references: [id])
-//   results  Result[]
-// }
-
-// model Result {
-//   id    String @id @default(auto()) @map("_id") @db.ObjectId
-//   score Int
-
-//   examId String? @db.ObjectId
-//   exam   Exam?   @relation(fields: [examId], references: [id])
-
-//   assignmentId String?     @db.ObjectId
-//   assignment   Assignment? @relation(fields: [assignmentId], references: [id])
-
-//   studentId String  @db.ObjectId
-//   student   Student @relation(fields: [studentId], references: [id])
-// }
-
-// model Attendance {
-//   id      String   @id @default(auto()) @map("_id") @db.ObjectId
-//   date    DateTime
-//   present Boolean
-
-//   studentId String  @db.ObjectId
-//   student   Student @relation(fields: [studentId], references: [id])
-
-//   lessonId String @db.ObjectId
-//   lesson   Lesson @relation(fields: [lessonId], references: [id])
-// }
-
-// model Event {
-//   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title       String
-//   description String
-//   startDate   DateTime
-//   endDate     DateTime
-
-//   classId String? @db.ObjectId
-//   class   Class?  @relation(fields: [classId], references: [id])
-// }
-
-// model Announcement {
-//   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-//   title       String
-//   description String
-//   date        DateTime
-
-//   classId String? @db.ObjectId
-//   class   Class?  @relation(fields: [classId], references: [id])
-// }
-
-// enum UserSex {
-//   MALE
-//   FEMALE
-// }
-
-// enum Day {
-//   MONDAY
-//   TUESDAY
-//   WEDNESDAY
-//   THURSDAY
-//   FRIDAY
-//   SATURDAY
-//   SUNDAY
-// }
+model Prospectus {
+  id    Int     @id @default(autoincrement())
+  title String
+  file  String?
+}

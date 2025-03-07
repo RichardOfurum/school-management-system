@@ -3,8 +3,12 @@
 @tailwind utilities;
 
 body {
-	overflow: hidden;
+	/* overflow: hidden; */
 }
+
+html {
+	scroll-behavior: smooth;
+  }
 
 .react-calendar {
 	width: 100% !important;

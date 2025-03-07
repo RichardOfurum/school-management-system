@@ -30,7 +30,7 @@ export default function RootLayout({
                     // className="h-10 mx-auto"
                     // objectFit="contain"
                 />
-                <span className="hidden lg:block font-bold">School Name</span>
+                <span className="hidden lg:block font-bold">Ridges</span>
             </Link>
             <Menu/>       
         </div>

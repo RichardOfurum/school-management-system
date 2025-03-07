@@ -3,11 +3,11 @@ import React from 'react';
 import Image from 'next/image';
 import Pagination from '@/components/Pagination';
 import Table from '@/components/Table';
-import FormModal from '@/components/FormModal';
 import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Assignment, Class, Prisma, Subject, Teacher } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type AssignmentList = Assignment & {
   lesson:{
@@ -15,19 +15,21 @@ type AssignmentList = Assignment & {
     class: Class;
     teacher: Teacher;
   }
-}
+} 
 
 
 const renderRow = (item:AssignmentList, role: string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
     
-    <td className='flex items-center gap-4 p-4 font-semibold'>
-        {item.lesson.subject.name}
+    <td className='p-4'>
+        <span className='font-semibold'> {item.lesson.subject.name} </span>
+        <br />
+        <span className='font-extralight'>{item.title}</span>
     </td>
     
     <td className=''>{item.lesson.class.name}</td>
     <td className='hidden md:table-cell'>{item.lesson.teacher.name + " " + item.lesson.teacher.surname }</td>    
-    <td className='hidden md:table-cell'>{new Intl.DateTimeFormat("en-US").format(item.dueDate)}</td>    
+    <td className='hidden md:table-cell'>{new Intl.DateTimeFormat("en-ng").format(item.dueDate)}</td>    
 
     <td>
       <div className='flex items-center gap-2'>
@@ -35,8 +37,8 @@ const renderRow = (item:AssignmentList, role: string | undefined) => (
             {
                 (role === "admin" || role === "teacher") && (
                   <>
-                      <FormModal table="assignment" type="update" data={item} />
-                      <FormModal table="assignment" type="delete" id={item.id} />
+                      <FormContainer table="assignment" type="update" data={item} />
+                      <FormContainer table="assignment" type="delete" id={item.id} />
                   </>
                   
                 )
@@ -55,7 +57,7 @@ const AssignmentListPage = async({
 
   // console.log(searchParams);
 
-  const {userId, sessionClaims } = await auth();
+  const {userId, sessionClaims} = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const currentUserId = userId;
 
@@ -184,9 +186,10 @@ const AssignmentListPage = async({
                           <button className='w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow'>
                               <Image src="/sort.png" alt="" height={14} width={14}/>
                           </button>
+                          
                           {
-                              role === "admin" || role === "teacher" && (
-                                <FormModal table="assignment" type="create" />
+                              (role === "admin" || role === "teacher") && (
+                                <FormContainer table="assignment" type="create" />
                               )
                           }
                       </div>

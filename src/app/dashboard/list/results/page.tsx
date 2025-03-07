@@ -8,6 +8,7 @@ import prisma from '@/lib/prisma';
 import { ITEM_PER_PAGE } from '@/lib/settings';
 import { Prisma } from '@prisma/client';
 import { auth } from '@clerk/nextjs/server';
+import FormContainer from '@/components/FormContainer';
 
 type ResultList = {
   id: number,
@@ -20,8 +21,6 @@ type ResultList = {
   className: string,
   startTime: Date,
 }
-
-
 
 const renderRow = (item:ResultList, role:string | undefined) => (
   <tr key={item.id} className='border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight'>
@@ -52,8 +51,8 @@ const renderRow = (item:ResultList, role:string | undefined) => (
             {
                 role === "admin" && (
                   <>
-                      <FormModal table="result" type="update" data={item} />
-                      <FormModal table="result" type="delete" id={item.id} />
+                      <FormContainer table="result" type="update" data={item} />
+                      <FormContainer table="result" type="delete" id={item.id} />
                   </>
                 )
             }
@@ -171,6 +170,9 @@ const ResultListPage = async({
   const [dataRes, count] = await prisma.$transaction([
     prisma.result.findMany({
       where:query,
+      orderBy: {
+        createdAt: "desc", // Order by createdAt in descending order (newest first)
+      },
       include:{
         student: {select:{name:true, surname:true}},
         exam:{
@@ -238,8 +240,8 @@ const ResultListPage = async({
                                 <Image src="/sort.png" alt="" height={14} width={14}/>
                             </button>
                             {
-                                role === "admin" && (
-                                  <FormModal table="result" type="create" />
+                                (role === "admin" || role === "teacher") && (
+                                  <FormContainer table="result" type="create" />
                                 )
                             }
                         </div>
