@@ -20,7 +20,7 @@ const Hero = () => {
                 className="text-center lg:text-left max-w-2xl lg:mr-16"
               >
                 <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-                  Redgis International School
+                  RIDGES INTERNATIONAL SCHOOL 
                 </h1>
                 <div className="space-y-2 mb-8">
                   <h2 className="text-3xl lg:text-4xl font-semibold text-yellow-400">
@@ -31,7 +31,7 @@ const Hero = () => {
                   </h2>
                 </div>
                 <p className="text-lg lg:text-xl mb-8 leading-relaxed">
-                  At Regis International School, we provide a nurturing environment
+                  At Ridges International School, we provide a nurturing environment
                   where students discover their potential and develop the skills to
                   succeed in an ever-changing world.
                 </p>

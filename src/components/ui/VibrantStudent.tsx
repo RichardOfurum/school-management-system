@@ -15,12 +15,13 @@ export default function VibrantStudent() {
 
         <div className='flex flex-col lg:flex-row '>
 
-            <div>
-                <BigCard image="/hero.pnt" title="Athletics" description='Competitive sports programs that build teamwork, discipline, and character.'/>
+            <div className='bg-red-50 h-10'>
+
+                {/* <BigCard image="/hero.png" title="Athletics" description='Competitive sports programs that build teamwork, discipline, and character.'/> */}
             </div>
             
            <div>
-                <BigCard image="/hero.pnt" title="Clubs & Societies" description='Join local clubs, societies, and organizations to learn about various aspects of life.'/>
+                {/* <BigCard image="/hero.png" title="Clubs & Societies" description='Join local clubs, societies, and organizations to learn about various aspects of life.'/> */}
            </div>
 
         </div>
