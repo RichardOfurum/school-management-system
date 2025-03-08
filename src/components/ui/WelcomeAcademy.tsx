@@ -28,7 +28,7 @@ const WelcomeAcademy = () => {
                 className="text-center mb-6"
             >
                 <h1 className="sm:text-5xl font-bold text-gray-900 mb-4 text-2xl">
-                    Welcome to Regis International School
+                    Welcome to Ridges International School
                 </h1>
                 <p className="text-lg sm:text-xl text-gray-700 font-extralight">
                 A place where education meets innovation, and students are prepared not
