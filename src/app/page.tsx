@@ -5,6 +5,8 @@ import Story from "@/components/ui/Story";
 import AcademicExcellence from "@/components/ui/AcademicExcellence";
 import VibrantStudent from "@/components/ui/VibrantStudent";
 import Hero from "@/components/ui/Hero";
+import JoinOurCommunity from "@/components/ui/JoinOurCommunity";
+import Footer from "@/components/ui/Footer";
 
 const Homepage = () => {
   return (
@@ -26,6 +28,10 @@ const Homepage = () => {
             <AcademicExcellence />
 
             <VibrantStudent/>
+
+            <JoinOurCommunity/>
+
+            <Footer/>
         </div>
     </>
   );
