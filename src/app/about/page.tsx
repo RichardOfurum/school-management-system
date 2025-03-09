@@ -1,10 +1,50 @@
+"use client"
+import Header from '@/components/ui/Header'
 import React from 'react'
+
+import Footer from '@/components/ui/Footer'
+import AboutHero from '@/components/ui/AboutHero'
+import AboutStory from '@/components/ui/AboutStory'
+import Hero from '@/components/ui/Hero'
+import Values from '@/components/ui/Values'
+import Team from '@/components/ui/Team'
+import Facility from '@/components/ui/Facility'
+import JoinOurCommunity from '@/components/ui/JoinOurCommunity'
 
 const AboutPage = () => {
   return (
-    <div>
-      <h1>About page</h1>
-    </div>
+    <>
+        <Header/>
+        <div className="w-full bg-white flex flex-col">
+
+          {/* Hero Section */}
+          <AboutHero/>
+          {/* <HeroTwo/> */}
+
+         <AboutStory/>
+
+         <Values/>
+
+         <Team/>
+
+        
+          <Facility/>
+          <JoinOurCommunity/>
+          <Footer/>
+        </div>
+    </>
+    // <>
+    //     <Header/>
+        
+    //     <div className='w-full bg-white'>
+    //         <AboutHero/>
+    //         {/* <Hero/> */}
+
+    //         <AboutStory/>
+
+    //         <Footer/>
+    //     </div>
+    // </>
   )
 }
 

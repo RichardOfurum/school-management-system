@@ -7,6 +7,7 @@ import VibrantStudent from "@/components/ui/VibrantStudent";
 import Hero from "@/components/ui/Hero";
 import JoinOurCommunity from "@/components/ui/JoinOurCommunity";
 import Footer from "@/components/ui/Footer";
+import HeroTwo from "@/components/ui/HeroTwo";
 
 const Homepage = () => {
   return (
@@ -15,7 +16,8 @@ const Homepage = () => {
         <div className="w-full bg-white">
 
           {/* Hero Section */}
-          <Hero/>
+          {/* <Hero/> */}
+          <HeroTwo/>
 
           {/* WelcomeAcademy Section */}
      

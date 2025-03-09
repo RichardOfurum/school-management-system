@@ -43,8 +43,8 @@ const Story = () => {
           {/* Left Section: Image Content */}
           <motion.div variants={itemVariants} className="relative h-96">
             <Image
-              src="/herobg.png" // Replace with your image path
-              alt="Horizon Academy Campus"
+              src="/herobg.png"
+              alt="Ridges"
               fill
               className="rounded-lg object-cover shadow-lg"
             />
