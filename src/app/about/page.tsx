@@ -17,7 +17,7 @@ const AboutPage = () => {
         <Header/>
         <div className="w-full bg-white flex flex-col">
 
-          {/* Hero Section */}
+     
           <AboutHero/>
           {/* <HeroTwo/> */}
 
@@ -33,18 +33,7 @@ const AboutPage = () => {
           <Footer/>
         </div>
     </>
-    // <>
-    //     <Header/>
-        
-    //     <div className='w-full bg-white'>
-    //         <AboutHero/>
-    //         {/* <Hero/> */}
-
-    //         <AboutStory/>
-
-    //         <Footer/>
-    //     </div>
-    // </>
+ 
   )
 }
 
