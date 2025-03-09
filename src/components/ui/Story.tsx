@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 const Story = () => {
   // Animation variants
@@ -69,7 +70,9 @@ const Story = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300"
             >
-              Learn More About Us →
+              <Link href="/about">
+                  Learn More About Us →
+              </Link>
             </motion.button>
           </motion.div>
 
