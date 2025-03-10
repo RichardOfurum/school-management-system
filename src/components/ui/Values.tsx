@@ -13,7 +13,7 @@ const Values = () => {
 
 
         {/* bottom  */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-10 p-10'>
+        <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-2 lg:p-4'>
            
             <ValueCard
                 title="Excellence"

@@ -13,7 +13,7 @@ const Team = () => {
         </div>
 
         {/* bottom  */}
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-10 p-10'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 p-2 lg:p-28'>
            
             <TeamCard
                 img="/herobg.png"

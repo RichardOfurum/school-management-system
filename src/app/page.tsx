@@ -23,7 +23,7 @@ const Homepage = () => {
      
             <WelcomeAcademy />
 
-            <div className="w-full p-4 flex md:p-10  lg:p-20 items-center justify-center">
+            <div className="w-full flex md:p-4  lg:p-10 items-center justify-center">
             <Story/>
             </div>
 

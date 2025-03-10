@@ -22,7 +22,7 @@ const Story = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 py-6 px-6 sm:px-12 lg:px-24 rounded-md">
+    <div className="min-h-screen bg-stone-50 py-6 px-2 md:px-4 sm:px-12 lg:px-24 rounded-md">
       {/* Container with animations */}
       <motion.div
         variants={containerVariants}

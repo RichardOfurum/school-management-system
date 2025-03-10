@@ -15,7 +15,7 @@ const AboutStory = () => {
 
 
         {/* bottom  */}
-        <div className='flex flex-col gap-10'>
+        <div className='flex flex-col gap-10 lg:p-28'>
             <MiniStory
                 floatToLeft={true}
                 title="Founded on a Vission"
