@@ -13,7 +13,7 @@ const Facility = () => {
 
 
         {/* bottom  */}
-        <div className='grid grid-cols-2 md:grid-cols-3 gap-10 p-10'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-2 lg:gap-10 p-2 lg:p-28'>
 
                 <div className="relative bg-[url('/herobg.png')] bg-cover bg-center h-60 flex flex-col justify-end items-start text-white p-2 md:p-4 rounded-lg">
 

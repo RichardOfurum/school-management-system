@@ -22,7 +22,7 @@ const AcademicExcellence = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-12 px-6 sm:px-12 lg:px-24">
+    <div className="min-h-screen bg-white py-12 px-2 md:px-12 lg:px-24">
       {/* Container with animations */}
       <motion.div
         variants={containerVariants}
@@ -49,7 +49,7 @@ const AcademicExcellence = () => {
         </motion.p>
 
         {/* Programs Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
           {/* Elementary School */}
           <Card 
             image="/hero.png" 
