@@ -12,7 +12,7 @@ const mission = () => {
             Ridges International School is to provide a transformative eductional experience that nurtures intellectual resources curiosity, fosters personal growth, and empowers students to become compassionate, innovative, and responsible global citizens who make meaningful contributions to society.
         </p>
         <p className='italic text-sm text-gray-600'>
-            "Education is not the filling of a pail, but the lighthing of a fire "
+        &quot; Education is not the filling of a pail, but the lighthing of a fire &quot;
         </p>
         <span className='text-gray-700'>-- william butter yeats</span>
     </div>
