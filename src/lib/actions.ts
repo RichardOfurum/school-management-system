@@ -1628,11 +1628,97 @@ export const deleteResult = async (
 };
 
 
+// export const createPost = async (
+//   currentState: CurrentState,
+//   data: PostSchema
+// ) => {
+//   try {
+//     const validatedData = postSchema.parse(data);
+
+//     await prisma.post.create({
+//       data: {
+//         title: validatedData.title,
+//         description: validatedData.description,
+//         image: validatedData.image,
+//       },
+//     });
+
+//     // revalidatePath("/list/posts");
+//     return { success: true, error: false };
+//   } catch (err: any) {
+//     console.error("Error creating post:", err);
+
+//     if (err.name === "ZodError") {
+//       const errors = err.errors.map((e: any) => e.message).join(", ");
+//       return { success: false, error: `Validation error: ${errors}` };
+//     }
+
+//     if (err.code === "P2002") {
+//       const field = err.meta?.target?.[0];
+//       return { success: false, error: `A post with this ${field} already exists.` };
+//     }
+
+//     return { success: false, error: "Failed to create post. Please try again." };
+//   }
+// };
+
+
+// export const updatePost = async (
+//   currentState: CurrentState,
+//   data: PostSchema
+// ) => {
+//   try {
+//     const validatedData = postSchema.parse(data);
+
+//     if (!validatedData.id) {
+//       return { success: false, error: "Post ID is required for updating." };
+//     }
+
+//     await prisma.post.update({
+//       where: {
+//         id: validatedData.id,
+//       },
+//       data: {
+//         title: validatedData.title,
+//         description: validatedData.description,
+//         image: validatedData.image,
+//       },
+//     });
+
+//     // revalidatePath("/list/posts");
+//     return { success: true, error: false };
+//   } catch (err: any) {
+//     console.error("Error updating post:", err);
+
+//     if (err.name === "ZodError") {
+//       const errors = err.errors.map((e: any) => e.message).join(", ");
+//       return { success: false, error: `Validation error: ${errors}` };
+//     }
+
+//     if (err.code === "P2025") {
+//       return { success: false, error: "Post not found." };
+//     }
+
+//     return { success: false, error: "Failed to update post. Please try again." };
+//   }
+// };
+
+type CurrentPostState = {
+  success: boolean;
+  error: string | null;
+};
+
 export const createPost = async (
-  currentState: CurrentState,
-  data: PostSchema
-) => {
+  currentState: CurrentPostState,
+  formData: FormData
+): Promise<CurrentPostState> => {
   try {
+    const data = {
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      image: formData.get("image") as string,
+    };
+
     const validatedData = postSchema.parse(data);
 
     await prisma.post.create({
@@ -1644,7 +1730,7 @@ export const createPost = async (
     });
 
     // revalidatePath("/list/posts");
-    return { success: true, error: false };
+    return { success: true, error: null };
   } catch (err: any) {
     console.error("Error creating post:", err);
 
@@ -1663,10 +1749,17 @@ export const createPost = async (
 };
 
 export const updatePost = async (
-  currentState: CurrentState,
-  data: PostSchema
-) => {
+  currentState: CurrentPostState,
+  formData: FormData
+): Promise<CurrentPostState> => {
   try {
+    const data = {
+      id: formData.get("id") ? parseInt(formData.get("id") as string) : undefined,
+      title: formData.get("title") as string,
+      description: formData.get("description") as string,
+      image: formData.get("image") as string,
+    };
+
     const validatedData = postSchema.parse(data);
 
     if (!validatedData.id) {
@@ -1685,7 +1778,7 @@ export const updatePost = async (
     });
 
     // revalidatePath("/list/posts");
-    return { success: true, error: false };
+    return { success: true, error: null };
   } catch (err: any) {
     console.error("Error updating post:", err);
 
