@@ -1795,21 +1795,51 @@ export const updatePost = async (
   }
 };
 
-export const deletePost = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
+// export const deletePost = async (
+//   currentState: CurrentState,
+//   data: FormData
+// ) => {
+//   const id = data.get("id") as string;
 
+//   try {
+//     await prisma.post.delete({
+//       where: {
+//         id: parseInt(id, 10),
+//       },
+//     });
+
+//     // revalidatePath("/list/posts");
+//     return { success: true, error: false };
+//   } catch (err: any) {
+//     console.error("Error deleting post:", err);
+
+//     if (err.code === "P2025") {
+//       return { success: false, error: "Post not found." };
+//     }
+
+//     return { success: false, error: "Failed to delete post. Please try again." };
+//   }
+// };
+
+export const deletePost = async (
+  currentState: CurrentPostState,
+  formData: FormData
+): Promise<CurrentPostState> => {
   try {
+    const id = formData.get("id") as string;
+
+    if (!id) {
+      return { success: false, error: "Post ID is required for deletion." };
+    }
+
     await prisma.post.delete({
       where: {
         id: parseInt(id, 10),
       },
     });
 
-    // revalidatePath("/list/posts");
-    return { success: true, error: false };
+    // revalidatePath("/list/posts"); // Revalidate the path to refresh the data
+    return { success: true, error: null };
   } catch (err: any) {
     console.error("Error deleting post:", err);
 
@@ -1820,7 +1850,6 @@ export const deletePost = async (
     return { success: false, error: "Failed to delete post. Please try again." };
   }
 };
-
 
 export const createProspectus = async (
   currentState: CurrentState,
