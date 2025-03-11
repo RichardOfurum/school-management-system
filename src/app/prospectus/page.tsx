@@ -46,7 +46,7 @@ const ProspectusPage = () => {
             Discover everything you need to know about our school. Our prospectus provides detailed information about our curriculum, facilities, extracurricular activities, and the unique opportunities we offer to our students.
           </p>
           <p className="text-lg text-center max-w-2xl px-4">
-            We are committed to nurturing young minds and preparing them for a bright future. Download or view our prospectus to learn more about how we can support your child's educational journey.
+            We are committed to nurturing young minds and preparing them for a bright future. Download or view our prospectus to learn more about how we can support your child&apos;s educational journey.
           </p>
         </motion.div>
 
