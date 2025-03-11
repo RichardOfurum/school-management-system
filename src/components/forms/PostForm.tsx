@@ -48,19 +48,23 @@ const PostForm = ({
   );
 
   const onSubmit = handleSubmit((formData) => {
-    setIsLoading(true);
+    try {
+        setIsLoading(true);
 
-    // Prepare the data to be sent to the server action
-    const payload = {
-      ...formData,
-      image: img?.secure_url || updateImg, // Use the new image URL if uploaded, otherwise keep the existing one
-    };
-
-    if (type === "update" && data?.id) {
-      payload.id = data.id; // Include the post ID for updates
+        // Prepare the data to be sent to the server action
+        const payload = {
+          ...formData,
+          image: img?.secure_url || updateImg, // Use the new image URL if uploaded, otherwise keep the existing one
+        };
+    
+        if (type === "update" && data?.id) {
+          payload.id = data.id; // Include the post ID for updates
+        }
+    
+        formAction(payload);
+    } catch (error) {
+      toast.success("Something went wrong, please try again!");
     }
-
-    formAction(payload);
   });
 
   const router = useRouter();
