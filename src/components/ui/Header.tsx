@@ -11,6 +11,7 @@ const menuList = [
   { id: "4", name: "Blog", href: "/blog" },
   { id: "5", name: "Contact", href: "/contact" },
   { id: "6", name: "Prospectus", href: "/prospectus" },
+  { id: "7", name: "FAQs", href: "/faq" },
 ];
 
 const Header = () => {
