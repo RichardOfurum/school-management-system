@@ -1974,6 +1974,11 @@ export const fetchAttendanceForLesson = async (lessonId: number) => {
   return attendance;
 };
 
+export const fetchProspectus = async () => {
+  const prospectus = await prisma.prospectus.findMany();
+  return prospectus;
+};
+
 // export const saveExamResults = async (
 //   examId: number,
 //   results: { studentId: string; score: number }[]
