@@ -1979,25 +1979,3 @@ export const fetchProspectus = async () => {
   return prospectus;
 };
 
-// export const saveExamResults = async (
-//   examId: number,
-//   results: { studentId: string; score: number }[]
-// ) => {
-//   try {
-//     await Promise.all(
-//       results.map((result) =>
-//         prisma.result.create({
-//           data: {
-//             score: result.score,
-//             examId: examId,
-//             studentId: result.studentId,
-//           },
-//         })
-//       )
-//     );
-//     return { success: true };
-//   } catch (err) {
-//     console.error("Error saving student results:", err);
-//     throw new Error("Failed to save student results");
-//   }
-// };
