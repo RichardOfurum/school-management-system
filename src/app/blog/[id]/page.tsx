@@ -1,8 +1,6 @@
-
-// app/blog/[id]/page.tsx
-import Footer from '@/components/ui/Footer';
-import Header from '@/components/ui/Header';
-import SocicalContact from '@/components/ui/SocicalContact';
+import SocicalContact from '@/components/landingpages/v1.0/SocicalContact';
+import Footer from '@/components/landingpages/v1.1/Footer';
+import Header from '@/components/landingpages/v1.1/Header';
 import { PrismaClient } from '@prisma/client';
 import Image from 'next/image';
 
@@ -29,7 +27,7 @@ export default async function SingleBlogPage({ params }: SingleBlogPageProps) {
         <Header/>
         <br />  <br /> <br /> 
        
-        <div className="min-h-screen bg-gray-50 py-12">
+        <div className="min-h-screen">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="bg-white rounded-lg shadow-lg overflow-hidden transition-shadow duration-300 hover:shadow-xl">
               <div className="relative h-96">

@@ -4,6 +4,7 @@ import * as Clerk from '@clerk/elements/common'
 import * as SignIn from '@clerk/elements/sign-in'
 import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 // import { useUser } from '@clerk/nextjs';
 // import { useEffect } from 'react';
@@ -14,14 +15,15 @@ const SingInPage = () => {
     const [loading, setLoading] = useState<boolean>(false)
     const {isLoaded, isSignedIn, user} = useUser();
 
-    // const router = useRouter();
+    const router = useRouter();
 
-    // useEffect(() =>{
-    //     const role = user?.publicMetadata.role;
-    //     if(role){
-    //         router.push(`/dashboard/${role}`)
-    //     }
-    // },[user, router]);
+    useEffect(() =>{
+        const role = user?.publicMetadata.role;
+        if(role){
+            router.push(`/dashboard/${role}`)
+        }
+    },[user, router]);
+    
     useEffect(() =>{
         setTimeout(() =>{
             setLoading(false);
