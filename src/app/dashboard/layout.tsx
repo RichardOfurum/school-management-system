@@ -6,8 +6,8 @@ import Navbar from "@/components/Navbar";
 
 
 export const metadata: Metadata = {
-  title: "School Management Dashboard",
-  description: "School Management System",
+  title: "Ridges International School",
+  description: "A place where education meets innovation, and students are prepared not just for exams, but for life.",
 };
 
 export default function RootLayout({

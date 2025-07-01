@@ -69,7 +69,7 @@ const TeacherForm = ({
     if(data){
       setUpdateImg(data.img);
     }
-  },[]);
+  });
 
   const { subjects } = relatedData;
 
