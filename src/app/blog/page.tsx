@@ -42,7 +42,7 @@ export default async function BlogListPage({ searchParams }: BlogListPageProps) 
 
           {/* Blog Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogs.map((blog) => (
+            {blogs.map((blog:any) => (
               <Link key={blog.id} href={`/blog/${blog.id}`}>
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
                   <div className="relative h-48">
